@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
+from pydantic import BaseModel
 
 class User(Base):
     __tablename__ = 'users'
@@ -11,13 +12,15 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     github_username = Column(String, unique=True, nullable=False)
-    ## password not present in User base, only UserInDB for security
     socials = Column(String, nullable=False) # JSON object
     expertise = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     disabled = Column(Boolean, nullable=False)
 
     projects = relationship("Project", back_populates="owner")
+
+class UserInDB(User):
+    hashed_password = Column(String, nullable=False)
 
 
 # app/models.py
@@ -32,3 +35,11 @@ class Project(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     owner = relationship("User", back_populates="projects")
+
+class Token(BaseModel): ## difference between Base and BaseModel??
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str | None = None
