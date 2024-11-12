@@ -8,7 +8,7 @@ router = APIRouter()
 
 # Endpoint to register a new user
 @router.post("/users/", response_model=schemas.User)
-def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## session requires injection of current db instance
     return crud.create_user(db=db, user=user)
 
 # Endpoint to create a new project
