@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from .models import User, UserInDB, Token, TokenData
+from .schemas import UserBase
 
 import jwt
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
@@ -125,7 +126,7 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 ## identigfies the current user
-@router.get("/me")
+@router.get("/me", response_model=UserBase)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):

@@ -10,7 +10,9 @@ class UserBase(BaseModel):
     github_username: str
     socials: str  # JSON object as a string
     disabled: bool
-    expertise: Optional[str] = None
+    expertise: str
+    created_at: str
+    disabled: bool
 
 # Schema for creating a new user
 class UserCreate(UserBase):
