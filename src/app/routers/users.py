@@ -7,12 +7,12 @@ from ..database import get_db
 router = APIRouter()
 
 # Endpoint to register a new user
-@router.post("/users/", response_model=schemas.User)
+@router.post("/users", response_model=schemas.User)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## session requires injection of current db instance
     return crud.create_user(db=db, user=user)
 
 # Endpoint to create a new project
-@router.post("/projects/", response_model=schemas.Project)
+@router.post("/projects", response_model=schemas.Project)
 def create_project(project: schemas.ProjectCreate, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db=db, user_id=user_id)
     if db_user is None:
