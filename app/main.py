@@ -1,8 +1,8 @@
-# app/main.py
 from fastapi import FastAPI
 from .routers import users
 from .database import engine
 from .models import Base
+import logging
 
 app = FastAPI()
 
@@ -11,6 +11,8 @@ Base.metadata.create_all(bind=engine)
 
 # Include user router
 app.include_router(users.router)
+logging.basicConfig()
+logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 # Define a root endpoint
 @app.get("/")
