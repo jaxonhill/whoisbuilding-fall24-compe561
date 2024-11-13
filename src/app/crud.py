@@ -1,15 +1,23 @@
 # app/crud.py
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 from . import models, schemas
+from .auth import get_password_hash
 
 # Create a new user
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(
+    db_user = models.UserInDB(
         name=user.name,
         email=user.email,
-        password=user.password,  # Remember to hash passwords (i think ugur wants us to)
-        expertise=user.expertise
+        github_username=user.github_username,
+        socials=user.socials,
+        hashed_password=get_password_hash(user.password),  # Remember to hash passwords (i think ugur wants us to)
+        expertise=user.expertise,
+        created_at=datetime.now(),
+        disabled=False
     )
+    print(db_user.hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
