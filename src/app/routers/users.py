@@ -1,4 +1,3 @@
-# app/routers/users.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .. import crud, schemas
@@ -10,6 +9,10 @@ router = APIRouter()
 @router.post("/users", response_model=schemas.User)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## session requires injection of current db instance
     return crud.create_user(db=db, user=user)
+
+@router.get("/users")
+def get_users(db: Session = Depends(get_db)):
+    return crud.get_all_users(db=db)
 
 # Endpoint to create a new project
 @router.post("/projects", response_model=schemas.Project)
