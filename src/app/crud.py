@@ -7,7 +7,7 @@ from .auth import get_password_hash
 
 # Create a new user
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.UserInDB(
+    db_user = models.User(
         name=user.name,
         email=user.email,
         github_username=user.github_username,

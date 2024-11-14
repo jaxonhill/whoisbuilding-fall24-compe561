@@ -12,15 +12,16 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     github_username = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
     socials = Column(String, nullable=False) # JSON object
     expertise = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False)
     disabled = Column(Boolean, nullable=False)
 
     projects = relationship("Project", back_populates="owner")
 
-class UserInDB(User):
-    hashed_password = Column(String, nullable=False)
+##class UserInDB(User):
+   ## hashed_password = Column(String, nullable=False)
 
 class Project(Base):
     __tablename__ = 'projects'
