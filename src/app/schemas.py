@@ -10,7 +10,7 @@ class UserBase(BaseModel):
     socials: str  # JSON object as a string
     disabled: bool
     expertise: str
-    created_at: str
+    created_at: datetime
     disabled: bool
 
 # Schema for creating a new user
