@@ -24,36 +24,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 pass_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-fake_users_db = {
-    "johndoe@example.com": {
-        "id": 1,
-        "name": "John Doe",
-        "email": "johndoe@example.com",
-        "github_username": "johndoe",
-        "socials": '{"twitter": "johndoe"}',  ## JSON object as a string
-        "expertise": "Python,FastAPI",
-        "created_at": "2023-01-01T00:00:00Z",
-        "hashed_password": "$2b$12$ot9nquc3kC0G/0uvbzpyou2u8PlaZKD1dB4TEvVO6qL96uE74mB7u", ## hashed of "secret"
-        "disabled": False,
-    },
-    "alice@example.com": {
-        "id": 2,
-        "name": "Alice Wonderson",
-        "email": "alice@example.com",
-        "github_username": "alice",
-        "socials": '{"linkedin": "alice"}',  ## JSON object as a string
-        "expertise": "JavaScript,React",
-        "created_at": "2023-01-01T00:00:00Z",
-        "hashed_password": "$2b$12$gV9aNp4s8HdQL7UH3GjSA.U.C5J7JfCW58FW1UmqDBC8U5mw1YLDa", ## hashed of "secret2"
-        "disabled": True, ## only active accounts are permitted for log in, will return 400 inactive user
-    },
-}
-
-def get_user(db, email: str):
-    if email in db:
-        user_dict = db[email]
-        return UserInDB(**user_dict) ## ** unpacks dictionary
-
 def verify_password(plain_password, hashed_password):
     return pass_context.verify(plain_password, hashed_password)
 
