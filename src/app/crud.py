@@ -40,6 +40,9 @@ def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
+def get_all_users(db: Session):
+    return db.query(models.User)
+
 # Get a project by ID
 def get_project(db: Session, project_id: int):
     return db.query(models.Project).filter(models.Project.id == project_id).first()
