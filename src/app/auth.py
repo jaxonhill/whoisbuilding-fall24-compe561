@@ -1,8 +1,11 @@
 # app/auth.py
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
-from .models import User, UserInDB, Token, TokenData
+from .models import User, Token, TokenData
 from .schemas import UserBase
+from .database import get_db
+from sqlalchemy.orm import Session
+from . import crud
 
 import jwt
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
@@ -57,8 +60,8 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pass_context.hash(password)
 
-def authenticate_user(fake_db, email: str, password: str):
-    user = get_user(fake_db, email)
+def authenticate_user(db, email: str, password: str):
+    user = crud.get_user_by_email(db, email)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -75,7 +78,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -89,7 +92,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token_data = TokenData(email=email)
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user(fake_users_db, email=token_data.email)
+    user = crud.get_user_by_email(db, token_data.email)
     if user is None:
         raise credentials_exception
     return user
@@ -111,8 +114,10 @@ def hash_pass(password : str):
 @router.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db)
 ) -> Token:
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    
+    user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
