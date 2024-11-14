@@ -3,6 +3,7 @@ from .routers import users
 from .auth import router as auth_router
 from .database import engine
 from .models import Base
+import logging
 
 app = FastAPI()
 
@@ -13,6 +14,9 @@ Base.metadata.create_all(bind=engine)
 app.include_router(users.router)
 ## include auth router
 app.include_router(auth_router)
+
+logging.basicConfig()
+logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 # Define a root endpoint
 @app.get("/")
 def read_root():

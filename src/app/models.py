@@ -1,3 +1,4 @@
+
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -21,8 +22,6 @@ class User(Base):
 class UserInDB(User):
     hashed_password = Column(String, nullable=False)
 
-
-# app/models.py
 class Project(Base):
     __tablename__ = 'projects'
 
