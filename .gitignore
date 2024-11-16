@@ -1,0 +1,61 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+venv.bak/
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Uvicorn logs
+*.log
+
+# Python egg caches
+.eggs/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# dotenv environment variables
+.env
+.env.*
+
+# Pytest
+.pytest_cache/
+.cache
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# FastAPI-specific
+instance/
+uploads/
+
+# VS Code settings
+.vscode/
+
+# macOS files
+.DS_Store
+
+# IDE settings
+.idea/
+
+# Python virtual environments
+pip-wheel-metadata/
+__pypackages__/
