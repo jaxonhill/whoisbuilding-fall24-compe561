@@ -19,6 +19,8 @@ Install [Hatch](https://hatch.pypa.io/latest/) to your local machine
 Once the fastapi server is activated, navigate to `http://127.0.0.1:8000/docs`. Then, use the postman style interface to interact with the APIs.
 
 ### Run Tests
+1. Ensure virtual environment is setup and dependencies are installed
+2. Run tests from the root of the project using `pytest src/app/tests.py`.
 
 ## Fastapi Footnotes
 ### `Depends`
