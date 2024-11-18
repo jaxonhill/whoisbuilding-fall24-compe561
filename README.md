@@ -10,12 +10,12 @@ WhoIsBuilding.io is an interactive web platform that enables computer science st
 ## Run the Application
 ### Install Project Manager
 Install [Hatch](https://hatch.pypa.io/latest/) to your local machine
-### Run Fastapi Server
-1. `hatch run uv sync` - creates venv and synces dependencies  
+### Run FastAPI Server
+1. `hatch run uv sync` - creates venv and synces dependencies from `pyproject.toml`
 2. `hatch run fastapi dev ./src/app/main.py` - start dev server (use run for production)
 * When adding new dependencies use `hatch run uv add "dependency_name"` - add a new dependency (hatch uv version of pip install)
 
-### Interact with the APIs via Fastapi Docs
+### Interact with the APIs via FastAPI Docs
 Once the fastapi server is activated, navigate to `http://127.0.0.1:8000/docs`. Then, use the postman style interface to interact with the APIs.
 
 ### Run Tests
