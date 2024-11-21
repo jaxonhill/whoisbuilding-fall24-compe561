@@ -111,17 +111,11 @@ def getRecentContributionHistory(github_username: str, from_date: datetime, to_d
                         contribution_grid_id = data['id'] ## corresponding contribution grid id to relate to tool tip; eg. contribution-day-component-6-50
 
                         contribution_grid[date] = contribution_grid_id
-    print(contribution_grid)
-    test_date = datetime(2024, 11, 22)
-    stringify_date = test_date.strftime('%Y-%m-%d')
-    grid_id = contribution_grid[stringify_date]
-    contribution = tool_tips[grid_id]
-    print(contribution)
 
+    ## count contributions
     recent_contributions_count = 0
-
     current_date = from_date
-    while from_date <= to_date:
+    while current_date <= to_date:
         stringify_date = current_date.strftime('%Y-%m-%d')
         grid_id = contribution_grid[stringify_date] ## get grid id
         
@@ -140,10 +134,12 @@ def getRecentContributionHistory(github_username: str, from_date: datetime, to_d
 
 
 def main():
-    from_date = datetime(2024,11,19)
-    to_date = datetime(2024,11,19)
+    from_date = datetime(2024,11,17)
+    to_date = datetime(2024,11,20)
 
-    getRecentContributionHistory("mhayescs19",from_date, to_date)
+    num_of_contributions = getRecentContributionHistory("mhayescs19",from_date, to_date)
+
+    print(num_of_contributions)
 
 if __name__ == "__main__":
     main()
