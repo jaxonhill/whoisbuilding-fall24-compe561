@@ -25,12 +25,14 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
+    "beautifulsoup4>=4.12.3",
     "fastapi[all]>=0.115.4",
     "passlib[bcrypt]>=1.7.4",
     "pydantic-settings>=2.6.0",
     "pyjwt>=2.9.0",
     "python-dotenv>=1.0.1",
     "python-jose>=3.3.0",
+    "requests>=2.32.3",
     "sqlalchemy>=2.0.36",
     "sqlmodel>=0.0.22",
 ]
