@@ -8,8 +8,6 @@ ONE_DAY = 1
 ON_SPACE = " "
 NO_CONTRIBUTIONS = "No"
 
-## average contributions in two weeks
-
 def getContributionPageSoup(github_username: str) -> BeautifulSoup:
     """get page content for contribution data
 
@@ -82,8 +80,6 @@ def getRecentContributionHistory(github_username: str, from_date: datetime, to_d
         int : number of contributions
     """
     contribution_page = getContributionPageSoup(github_username)
-
-    ##calendar = contribution_page.find('div', { 'data-graph-url' : f'/users/{github_username}/contributions' }) ## navigate to calendar
 
     tool_tip_elements = contribution_page.findAll('tool-tip')
 
