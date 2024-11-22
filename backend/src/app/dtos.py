@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import List
 ## data transfer object wrappers for data no represented in database
 
 class GitHubRepository(BaseModel):
@@ -7,6 +8,9 @@ class GitHubRepository(BaseModel):
     """
     name: str
     link: str
+
+class GitHubRespositoryResponse(BaseModel):
+    active_repos: List[GitHubRepository]
 
 class GitHubUsername(BaseModel):
     username: str
