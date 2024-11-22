@@ -14,6 +14,6 @@ class GitHubUsername(BaseModel):
 class GitHubContributionResponse(GitHubUsername):
     contributions: int
 
-class GitHubContributionSummary(GitHubContributionResponse):
+class GitHubContributionSummaryResponse(GitHubContributionResponse):
     from_date: datetime
     to_date: datetime
