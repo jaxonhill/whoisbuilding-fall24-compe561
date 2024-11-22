@@ -130,7 +130,6 @@ def getRecentContributionHistory(github_username: str, from_date: datetime, to_d
         grid_id = contribution_grid[stringify_date] ## get grid id
         
         contribution = tool_tips[grid_id] ## find grid id to extract contribution
-        print(contribution)
 
         flex_contribution_value = contribution.split(ON_SPACE)[0] ## contribution can either be an int or the string "No", hence it is flex at this state
         if flex_contribution_value != NO_CONTRIBUTIONS:
@@ -158,7 +157,7 @@ def isValidGitHubUsername(github_username: str) -> bool:
     response = requests.get(github_contributions_url)
 
     if response.status_code == 404:
-        raise GitHubUsernameException("Username does not exist")
+        raise GitHubUsernameException(f"username {github_username} is not registered on github.com")
     
     return response.status_code == 200
 
