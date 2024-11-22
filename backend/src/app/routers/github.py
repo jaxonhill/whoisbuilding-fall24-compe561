@@ -36,10 +36,6 @@ def contribution_activity_in_date_range(start_date: datetime, end_date: datetime
     Args:
         start (datetime): beginning of date range
         end (datetime): end of date range
-        current_user (Annotated[User, Depends): user context
-
-    Raises:
-        HTTPException:
 
     Returns:
         GitHubContributionSummaryResponse: github username, contribution count, and date range
