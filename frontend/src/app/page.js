@@ -1,7 +1,9 @@
-import SearchBar from "@/features/filters/components/search-bar";
+import FiltersContainer from "@/features/filters/components/filters-container";
 
 export default function Home() {
   return (
-    <SearchBar />
+    <div className="ml-8 mt-8 w-96">
+      <FiltersContainer />
+    </div>
   );
 }
