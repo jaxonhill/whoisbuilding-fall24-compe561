@@ -9,7 +9,7 @@ const poppins = Poppins({
 export default function Logo() {
   return (
     <div className="flex gap-1 items-center">
-        <Hammer className="h-8 w-8" />
+        <Hammer className="h-8 w-8 stroke-[1.5px]" />
         <p className={`${poppins.className} font-medium text-xl`}>whoisbuilding</p>
     </div>
   )
