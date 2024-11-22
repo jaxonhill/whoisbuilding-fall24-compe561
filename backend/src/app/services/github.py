@@ -78,9 +78,7 @@ def getMostRecentRepositories(github_username: str) -> List[GitHubRepository]:
     for repo in active_repositories_list.children:
         if isinstance(repo, Tag) and repo.name == 'a':
             name = repo.text
-            print(name)
             link = GITHUB_URL_STUB + repo.get("href")
-            print(link)
             parsedRepositories.append(GitHubRepository(name=name,link=link)) ## build list of readable GitHub repositories
     return parsedRepositories
 
