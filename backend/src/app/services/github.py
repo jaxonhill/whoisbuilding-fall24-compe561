@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
 from datetime import datetime, timedelta
+from typing import List
 
 from app.dtos import GitHubRepository
 from app.exceptions import GitHubUsernameException
@@ -8,6 +9,7 @@ from app.exceptions import GitHubUsernameException
 ONE_DAY = 1
 ON_SPACE = " "
 NO_CONTRIBUTIONS = "No"
+GITHUB_URL_STUB = "https://github.com"
 
 def contributionsUrl(github_username: str):
     """creates string interpolated github contributions url 
@@ -60,7 +62,7 @@ def getContributionsInLastYear(github_username: str) -> int:
 
     return contribution_num
 
-def getMostRecentRepositories(github_username: str):
+def getMostRecentRepositories(github_username: str) -> List[GitHubRepository]:
     """Obtains a user's most repositories they have committed too
 
     Args:
@@ -74,11 +76,10 @@ def getMostRecentRepositories(github_username: str):
     ##print(active_repositories_list)
     parsedRepositories = []
     for repo in active_repositories_list.children:
-        if isinstance(repo, Tag):
-            if repo.name == 'a' :
-                name = repo.text
+        if isinstance(repo, Tag) and repo.name == 'a':
+            name = repo.text
             print(name)
-            link = repo.get("href")
+            link = GITHUB_URL_STUB + repo.get("href")
             print(link)
             parsedRepositories.append(GitHubRepository(name=name,link=link)) ## build list of readable GitHub repositories
     return parsedRepositories
