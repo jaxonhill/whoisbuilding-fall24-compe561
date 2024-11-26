@@ -37,7 +37,7 @@ const types = [
 
 export default function FiltersContainer() {
   return (
-    <aside className="flex flex-col gap-8 w-full">
+    <aside className="flex flex-col gap-8 w-full col-span-4">
         <h1 className="font-medium text-2xl w-full">Filters</h1>
         <SearchBar />
         <SelectSection headingText={"Technologies"} options={technologies} />
