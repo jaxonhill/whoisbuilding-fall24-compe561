@@ -29,11 +29,12 @@ class User(UserBase):
 class ProjectBase(BaseModel):
     title: str
     description: str
-    tags: Optional[str] = None  # Store as a comma-separated string
+    tags: List[str]
 
 # Schema for creating a new project
 class ProjectCreate(ProjectBase):
     pass
+
 
 # Schema for returning a project
 class Project(ProjectBase):

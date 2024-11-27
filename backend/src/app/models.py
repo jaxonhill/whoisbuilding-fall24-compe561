@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, ARRAY
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
@@ -29,7 +29,7 @@ class Project(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
-    tags = Column(String)  # JSON or comma-separated tags
+    tags = Column(ARRAY(String), nullable=False)  # postgres array of strings
     user_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
 
