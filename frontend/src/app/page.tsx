@@ -4,6 +4,8 @@ import { Project } from "@/features/project-card/types/project-types";
 
 const project: Project = {
 	title: "whoisbuilding.io",
+	isLiked: false,
+	numberOfLikes: 5,
 	description:
 		"WhoIsBuilding is an interactive web platform tailored for computer science students to showcase, explore, and collaborate on projects. The goal of this platform is to create a community-driven space where students can easily upload their academic or personal projects, browse those of others, and find other students to collaborate with.",
 	liveSiteLink: "#",
