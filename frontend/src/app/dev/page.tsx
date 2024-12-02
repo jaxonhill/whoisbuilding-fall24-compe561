@@ -2,6 +2,7 @@ import GitHubChart from "@/components/github-chart";
 
 export default async function Dev() {
   const API_URL_STUB = "http://127.0.0.1:8000";
+  // static bearer token, must be replaced with actively issued jwt
   const BEARER_TOKEN =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE3MzMxMjc0ODV9.MrUeDGILMmuG0uUwhjqK7I8Rl2sXGQRiFaTZrcVCfew";
 
