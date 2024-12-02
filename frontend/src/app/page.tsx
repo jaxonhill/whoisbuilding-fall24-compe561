@@ -1,4 +1,5 @@
 import FiltersContainer from "@/features/filters/components/filters-container";
+import SortBy from "@/features/filters/components/sort-by";
 import ProjectCard from "@/features/project-card/components/project-card";
 import { Project } from "@/features/project-card/types/project-types";
 
@@ -36,6 +37,7 @@ export default function HomePage() {
 		<div className="grid mt-16 grid-cols-12 gap-8">
 			<FiltersContainer />
 			<div className="col-span-8 flex flex-col gap-8 overflow-auto">
+				<SortBy />
 				<ProjectCard project={project} />
 				<ProjectCard project={project} />
 			</div>
