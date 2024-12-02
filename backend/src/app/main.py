@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .routers import users
 from .auth import router as auth_router
 from app.routers.github import router as github_router
@@ -10,6 +11,14 @@ app = FastAPI()
 
 # Create tables if they don't exist
 Base.metadata.create_all(bind=engine)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # add all routers to app
 app.include_router(users.router,tags=["Users"])
