@@ -1,5 +1,5 @@
-import { TextPage } from "@/features/text-page/components/text-page"
-import { QuestionAnswer } from "@/features/text-page/types/types"
+import { TextPage } from "@/features/text-page/components/text-page";
+import { QuestionAnswer } from "@/features/text-page/types/types";
 
 const ABOUT_QUESTION_ANSWERS: QuestionAnswer[] = [
     {
@@ -18,7 +18,7 @@ const ABOUT_QUESTION_ANSWERS: QuestionAnswer[] = [
         question: "What types of projects can I share?",
         answer: "You can share any type of software project, whether it's a school assignment, personal project, or collaborative work. This includes web applications, mobile apps, games, algorithms, or any other computer science-related project.",
     },
-]
+];
 
 export default function AboutPage() {
     return (
@@ -27,5 +27,5 @@ export default function AboutPage() {
             description="Here's a bit more about WhoisBuilding."
             questions={ABOUT_QUESTION_ANSWERS}
         />
-    )
+    );
 } 

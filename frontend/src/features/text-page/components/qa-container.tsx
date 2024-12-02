@@ -11,4 +11,4 @@ export function QAContainer({ question_answer }: QAContainerProps) {
             <p className="text-slate-700">{question_answer.answer}</p>
         </section>
     );
-} 
+}

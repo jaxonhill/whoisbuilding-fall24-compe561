@@ -26,4 +26,4 @@ export function TextPage({ title, description, questions }: TextPageProps) {
             </div>
         </article>
     );
-} 
+}
