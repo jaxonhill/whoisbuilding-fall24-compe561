@@ -6,7 +6,7 @@ import { create_username_link, CURRENT_TEST_USER } from "@/utils/utils";
 import { Plus } from "lucide-react";
 
 // const user: User = CURRENT_TEST_USER;
-const user = CURRENT_TEST_USER;
+const user = null;
 
 export default function Navbar() {
 	return (
