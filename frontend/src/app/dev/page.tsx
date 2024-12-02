@@ -3,7 +3,7 @@ import GitHubChart from "@/components/github-chart";
 export default async function Dev() {
   const API_URL_STUB = "http://127.0.0.1:8000";
   const BEARER_TOKEN =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE3MzMxMDk0MDd9.xDiQ3hIfaWDH0zjHtPx34mmQz0eiIwIVRooVF9pdnXM";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE3MzMxMjc0ODV9.MrUeDGILMmuG0uUwhjqK7I8Rl2sXGQRiFaTZrcVCfew";
 
   async function fetchGitHubSummary(
     start_date: string,
@@ -31,14 +31,25 @@ export default async function Dev() {
       throw error; // make caller handle
     }
   }
+  const now = new Date();
+  const end_date = now.toLocaleString("en-CA").split(",")[0]; // 2024-12-01, 8:59:33 p.m. -> 2024-12-01
+  now.setMonth(now.getMonth() - 1); // set new date to 1 month ago
+  const start_date = now.toLocaleString("en-CA").split(",")[0];
 
-  const gitHubStats = await fetchGitHubSummary("2024-11-20", "2024-12-01");
+  const gitHubStats = await fetchGitHubSummary(start_date, end_date);
   return (
-    <>
+    <div className="w-25 h-auto">
       <GitHubChart
-        gitHubUsername="mhayescs19"
+        gitHubUsername={gitHubStats.username}
         chartData={gitHubStats.summary!.contributions_by_date}
+        to_date={gitHubStats.summary!.to_date}
+        from_date={gitHubStats.summary!.from_date}
+        total_contributions_in_date_range={
+          gitHubStats.summary!.contributions_total
+        }
+        yearly_contributions={gitHubStats.yearly_contributions!}
+        active_repos={gitHubStats.active_repos!}
       ></GitHubChart>
-    </>
+    </div>
   );
 }
