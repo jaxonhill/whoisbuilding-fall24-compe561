@@ -1,4 +1,3 @@
-import { Hammer } from "lucide-react";
 import { Poppins } from "next/font/google";
 
 const poppins = Poppins({
@@ -8,8 +7,8 @@ const poppins = Poppins({
 
 export default function Logo() {
 	return (
-		<div className={`${poppins.className} font-normal text-2xl`}>
+		<a href="/" className={`${poppins.className} font-normal text-2xl`}>
 			whoisbuilding
-		</div>
+		</a>
 	);
 }
