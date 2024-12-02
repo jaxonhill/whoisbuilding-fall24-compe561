@@ -16,7 +16,7 @@ from pydantic import BaseModel
 
 from .config import settings
 
-ACCESS_TOKEN_EXPIRY_MINUTES = 30
+ACCESS_TOKEN_EXPIRY_MINUTES = 300
 
 router = APIRouter(prefix="/auth")
 
