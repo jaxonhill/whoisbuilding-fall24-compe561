@@ -52,16 +52,28 @@ def delete_user(db: Session, user_id: int):
 
 # Create a new project
 def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
+    print(project.tags)
     db_project = models.Project(
         title=project.title,
         description=project.description,
-        tags=",".join(project.tags),  # Store tags as a comma-separated string for simplicity
+        tags=project.tags,
         user_id=user_id
     )
     db.add(db_project)
     db.commit()
     db.refresh(db_project)
-    return db_project
+
+    ## return schema instead of db model; is that the best practice?
+    project_response = schemas.Project(
+        id=db_project.id,
+        title=project.title,
+        description=project.description,
+        tags=project.tags,
+        user_id=user_id,
+        created_at=db_project.created_at
+    )
+
+    return project_response
 
 # Get a user by ID
 def get_user(db: Session, user_id: int):

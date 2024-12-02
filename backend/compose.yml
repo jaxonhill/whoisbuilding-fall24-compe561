@@ -1,0 +1,20 @@
+## docker postgres official documentation: https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      ## pass environment vars
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: whoisbuilding-dev
+    ports:
+      ## exposes container's port to he host's port 5432
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  data:
+    
