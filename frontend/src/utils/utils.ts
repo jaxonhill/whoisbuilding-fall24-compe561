@@ -10,6 +10,6 @@ export const CURRENT_TEST_USER: User = {
     linkedin_url: "https://www.linkedin.com/in/jaxon-c-hill/",
 }
 
-export function create_username_link(whois_username: string): string {
+export function create_profile_page_link(whois_username: string): string {
     return `/user/${whois_username}`;
 }

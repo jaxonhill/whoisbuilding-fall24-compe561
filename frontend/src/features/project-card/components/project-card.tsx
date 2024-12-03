@@ -1,4 +1,4 @@
-import { Project } from "../types/project-types";
+import { Project } from "@/types/db-types";
 
 import ProjectHeadingContainer from "./project-heading-container";
 import LikesContainer from "./likes-container";
@@ -14,7 +14,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 		<section className="p-8 flex flex-col gap-6 border border-slate-300 rounded-lg">
 			<div className="w-full flex flex-col gap-4">
 				<ProjectHeadingContainer project={project} />
-				<LikesContainer isLiked={project.is_liked} numberOfLikes={project.num_of_likes} />
+				{/* TODO: Can add back in likes when there is enough time */}
+				{/* <LikesContainer isLiked={project.is_liked} numberOfLikes={project.num_of_likes} /> */}
 				<p className="text-slate-700 leading-8">
 					{project.description}
 				</p>
