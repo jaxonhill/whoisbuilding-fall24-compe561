@@ -36,7 +36,7 @@ export default function Navbar() {
             </div>
         </nav>
     );
-
+}
 
 // =======
 // import { User } from "@/types/common-types";
