@@ -5,11 +5,12 @@ export type Option = {
 }
 
 export type User = {
+    id: number;
     name: string;
     email: string;
-	github_username: string;
-	avatar_img_url: string;
-    whois_username: string;
-    discord_username: string | null;
-    linkedin_url: string | null;
+    github_username: string;
+    expertise: string;
+    socials: string;
+    disabled: boolean;
+    created_at: string;
 }
