@@ -1,7 +1,10 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List
-## data transfer object wrappers for data no represented in database
+from typing import List, Dict, Optional
+## data transfer object wrappers for data not represented in database
+
+class GitHubUsername(BaseModel):
+    username: str
 
 class GitHubRepository(BaseModel):
     """Repository object
@@ -9,15 +12,17 @@ class GitHubRepository(BaseModel):
     name: str
     link: str
 
-class GitHubRespositoryResponse(BaseModel):
-    active_repos: List[GitHubRepository]
-
-class GitHubUsername(BaseModel):
-    username: str
-
-class GitHubContributionResponse(GitHubUsername):
-    contributions: int
-
-class GitHubContributionSummaryResponse(GitHubContributionResponse):
+class GitHubContributions(BaseModel):
     from_date: datetime
     to_date: datetime
+    contributions_total: int
+    contributions_by_date: List[Dict[str, object]] = []
+
+class GitHubRespositoryResponse(BaseModel):
+    active_repos: Optional[List[GitHubRepository]] = None
+
+class GitHubContributionResponse(GitHubUsername):
+    yearly_contributions: Optional[int] = None
+
+class GitHubContributionSummaryResponse(GitHubContributionResponse, GitHubRespositoryResponse):
+    summary: Optional[GitHubContributions] = None    

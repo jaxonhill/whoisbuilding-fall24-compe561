@@ -1,9 +1,9 @@
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Dict
 
-from app.dtos import GitHubRepository
+from app.dtos import GitHubRepository, GitHubContributions
 from app.exceptions import GitHubUsernameException
 
 ONE_DAY = 1
@@ -63,7 +63,7 @@ def getContributionsInLastYear(github_username: str) -> int:
     return contribution_num
 
 def getMostRecentRepositories(github_username: str) -> List[GitHubRepository]:
-    """Obtains a user's most repositories they have committed too
+    """Obtains a user's most repositories they have committed to
 
     Args:
         github_username (str): github username
@@ -83,14 +83,14 @@ def getMostRecentRepositories(github_username: str) -> List[GitHubRepository]:
     return parsedRepositories
 
 def getRecentContributionHistory(github_username: str, from_date: datetime, to_date: datetime):
-    """get the number of user contributions (commits) in a given date range
+    """get the number of user contributions in a given date range and contribution breakdown by date
 
     Args:
         github_username (str): github username
         from_date (date): end date yyyy-mm-dd
         to_date (date): start date yyyy-mm-dd
     Returns:
-        int : number of contributions
+        GitHubContributions : list of contributions by day, contribution count for date range, start date, end date
     """
     contribution_page = getContributionPageSoup(github_username)
 
@@ -121,23 +121,30 @@ def getRecentContributionHistory(github_username: str, from_date: datetime, to_d
 
                         contribution_grid[date] = contribution_grid_id
 
-    ## count contributions
-    recent_contributions_count = 0
+    recent_contributions_by_date = [] ## data in list of dictionaries eg. { date: , contributions: }
+    contribution_count = 0  ## count contributions in date range
     current_date = from_date
     while current_date <= to_date:
-        stringify_date = current_date.strftime('%Y-%m-%d')
+        stringify_date = current_date.strftime('%Y-%m-%d') ## convert to condensed date string yyyy-mm-dd
         grid_id = contribution_grid[stringify_date] ## get grid id
         
         contribution = tool_tips[grid_id] ## find grid id to extract contribution
 
         flex_contribution_value = contribution.split(ON_SPACE)[0] ## contribution can either be an int or the string "No", hence it is flex at this state
+        int_contribution_value = 0
         if flex_contribution_value != NO_CONTRIBUTIONS:
             int_contribution_value = int(flex_contribution_value)
-            recent_contributions_count += int_contribution_value
+
+            contribution_count += int_contribution_value
+        
+        entry = {}
+        entry["date"] = stringify_date
+        entry["contributions"] = int_contribution_value ## zero or contribution number
+        recent_contributions_by_date.append(entry)
 
         current_date += timedelta(days=ONE_DAY)
     
-    return recent_contributions_count
+    return GitHubContributions(contributions_by_date=recent_contributions_by_date, contributions_total=contribution_count,from_date=from_date, to_date=to_date)
 
 def isValidGitHubUsername(github_username: str) -> bool:
     """returns true if github username is registered on github.com, otherwise raises GitHubUsernameException

@@ -21,6 +21,14 @@ app.add_middleware(
 # Create tables if they don't exist
 Base.metadata.create_all(bind=engine)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # add all routers to app
 app.include_router(users.router,tags=["Users"])
 app.include_router(auth_router, tags=["Auth"])
