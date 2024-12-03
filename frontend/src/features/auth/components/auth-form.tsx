@@ -9,50 +9,71 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "../auth/context/auth-context";
+import { useAuth } from "../context/auth-context";
 
-const formSchema = z.object({
+// Schema for login form
+const loginSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
-})
+});
 
-export function LoginForm() {
+// Schema for signup form
+const signupSchema = loginSchema.extend({
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+interface AuthFormProps {
+  type: 'login' | 'signup';
+}
+
+export function AuthForm({ type }: AuthFormProps) {
   const { login } = useAuth();
   const router = useRouter();
+  const isLogin = type === 'login';
+  const schema = isLogin ? loginSchema : signupSchema;
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
       password: "",
+      ...(isLogin ? {} : { confirmPassword: "" }),
     },
-  })
+  });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof schema>) {
     try {
-      await login(values.email, values.password);
-      // After successful login, redirect to the home page
-      router.push("/");
-      router.refresh();
+      if (isLogin) {
+        await login(values.email, values.password);
+        router.push("/");
+        router.refresh();
+      } else {
+        // Handle signup logic here
+        console.log("Signup values:", values);
+      }
     } catch (error) {
-      console.log("Login failed: ", error);
+      console.log(`${isLogin ? 'Login' : 'Signup'} failed: `, error);
     }
   }
 
   return (
     <div className="w-full flex flex-col gap-8 p-16 rounded-md border border-slate-300">
-      <h1 className="w-full text-center font-medium text-3xl">Login</h1>
+      <h1 className="w-full text-center font-medium text-3xl">
+        {isLogin ? 'Login' : 'Create account'}
+      </h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-6">
           <FormField
@@ -70,7 +91,7 @@ export function LoginForm() {
           />
           <FormField
             control={form.control}
-            name="password" 
+            name="password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium text-base text-slate-950">Password</FormLabel>
@@ -81,14 +102,35 @@ export function LoginForm() {
               </FormItem>
             )}
           />
+          {!isLogin && (
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-medium text-base text-slate-950">Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Confirm your password" type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <Button className="h-12 bg-blue-700 font-medium text-base text-white hover:bg-blue-600" type="submit">
-            Login
+            {isLogin ? 'Login' : 'Create account'}
           </Button>
           <p className="text-slate-500 text-sm text-center">
-            Don't have an account? <a href="/signup" className="text-blue-700 font-medium hover:underline">Sign up</a>
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <a 
+              href={isLogin ? "/signup" : "/login"} 
+              className="text-blue-700 font-medium hover:underline"
+            >
+              {isLogin ? 'Sign up' : 'Log In'}
+            </a>
           </p>
         </form>
       </Form>
     </div>
-  )
+  );
 }
