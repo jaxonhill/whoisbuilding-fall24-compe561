@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "../auth/context/auth-context";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -26,6 +28,9 @@ const formSchema = z.object({
 })
 
 export function LoginForm() {
+  const { login } = useAuth();
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,8 +39,15 @@ export function LoginForm() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await login(values.email, values.password);
+      // After successful login, redirect to the home page
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.log("Login failed: ", error);
+    }
   }
 
   return (

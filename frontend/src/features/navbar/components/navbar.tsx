@@ -22,12 +22,12 @@ export default function Navbar() {
                     </>
                 ) : (
                     <>
-                        <button
-							onClick={() => login("string", "test")}
-							className="h-10 px-4 rounded bg-blue-700 font-medium text-white hover:bg-blue-600"
+                        <a
+							href="/login"
+							className="flex justify-center items-center h-10 px-4 rounded bg-blue-700 font-medium text-white hover:bg-blue-600"
 						>
                             Log In
-                        </button>
+                        </a>
                         <a className="text-blue-700 hover:underline hover:cursor-pointer">
                             Sign Up
                         </a>
