@@ -31,7 +31,7 @@ interface GitHubChartProps {
   active_repos: ActiveRepos[];
 }
 
-export default async function GitHubChart({
+export default function GitHubChart({
   gitHubUsername,
   chartData,
   from_date,
