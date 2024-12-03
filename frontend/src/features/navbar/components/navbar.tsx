@@ -28,7 +28,10 @@ export default function Navbar() {
 						>
                             Log In
                         </a>
-                        <a className="text-blue-700 hover:underline hover:cursor-pointer">
+                        <a
+                            href="/signup"
+                            className="text-blue-700 hover:underline hover:cursor-pointer"
+                        >
                             Sign Up
                         </a>
                     </>
