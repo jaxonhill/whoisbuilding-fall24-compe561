@@ -32,6 +32,13 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
+@router.get("/filter")
+def get_users_by_username_string_query(search_string: str, db: Session = Depends(get_db)):
+    db_users = crud.get_users_by_username(db=db, username_string=search_string)
+
+    return db_users
+
+
 # Endpoint to get a project by ID
 @router.get("/projects/{project_id}", response_model=schemas.Project)
 def read_project(project_id: int, db: Session = Depends(get_db)):
