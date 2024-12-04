@@ -6,6 +6,7 @@ from datetime import datetime
 class UserBase(BaseModel):
     name: str
     email: str
+    username: str
     github_username: str
     socials: str  # JSON object as a string
     disabled: bool
