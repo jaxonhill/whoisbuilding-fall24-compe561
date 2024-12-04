@@ -7,7 +7,7 @@ export default function Navbar() {
     const { user, login, logout } = useAuth();
 
     return (
-        <nav className="h-24 flex justify-between items-center">
+        <nav className="h-20 flex justify-between items-center text-base mb-8">
             <Logo />
             <div className="flex gap-4 items-center">
                 {user ? (

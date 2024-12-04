@@ -83,7 +83,7 @@ export default function ProfileInfoCard({
                 />
                 <SocialLinkContainer
                     label={linkedin_url || placeholders.linkedin}
-                    icon={<Linkedin className="flex-shrink-0 h-6 w-6 stroke-slate-800 fill-slate-800" />}
+                    icon={<Linkedin className="flex-shrink-0 h-6 w-6 stroke-slate-800" />}
                     link={linkedin_url || "#"}
                     isPlaceholder={!linkedin_url}
                 />
@@ -98,10 +98,10 @@ export default function ProfileInfoCard({
                 <div className="w-full pt-4">
                     <Button
                         onClick={onEdit}
-                        className="flex gap-2 w-full items-center bg-blue-700 h-12 hover:bg-blue-600"
+                        className="flex gap-2 w-full p-0 items-center bg-blue-700 h-12 hover:bg-blue-600"
                     >
-                        <SquarePen className="h-6 w-6 stroke-white" />
-                        <span className="text-white font-medium">Edit Profile</span>
+                        <SquarePen className="h-6 w-6 stroke-white flex-shrink-0" />
+                        <span className="text-white font-medium flex-shrink-0 text-base">Edit Profile</span>
                     </Button>
                 </div>
             )}

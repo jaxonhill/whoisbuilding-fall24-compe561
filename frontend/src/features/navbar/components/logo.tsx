@@ -7,7 +7,7 @@ const poppins = Poppins({
 
 export default function Logo() {
 	return (
-		<a href="/" className={`${poppins.className} font-normal text-2xl`}>
+		<a href="/" className={`${poppins.className} font-normal text-xl`}>
 			whoisbuilding
 		</a>
 	);
