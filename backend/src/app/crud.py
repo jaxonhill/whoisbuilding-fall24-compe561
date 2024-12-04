@@ -96,6 +96,7 @@ def get_projects_by_user(db: Session, user_id: int):
 
 def get_projects_by_page(db: Session, tags: List[str], sort_by: str, limit: int, page: int, user_id: int | None):
     offset = limit * (page-1)
+    ## todo build query based on specifications
 
     if sort_by == "new":
         if user_id:
