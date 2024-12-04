@@ -1,43 +1,46 @@
-import GitHubChart from "@/components/github-chart";
+"use client";
 
-export default async function Dev() {
-  const API_URL_STUB = "http://127.0.0.1:8000";
-  // static bearer token, must be replaced with actively issued jwt
-  const BEARER_TOKEN =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE3MzMxMjc0ODV9.MrUeDGILMmuG0uUwhjqK7I8Rl2sXGQRiFaTZrcVCfew";
+import GitHubChart from "@/features/github/components/github-chart";
+import GitHubSkeleton from "@/features/github/components/github-skeleton";
+import { fetchGitHubInfo } from "@/lib/api/github";
+import { useAuth } from "@/features/auth/context/auth-context";
 
-  async function fetchGitHubSummary(
-    start_date: string,
-    end_date: string
-  ): Promise<GitHubContributionsResponse> {
-    const queryString = `?start_date=${start_date}&end_date=${end_date}`;
-    const url = `${API_URL_STUB}/github/contributions/summary${queryString}`;
+import { useEffect, useState } from "react";
 
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${BEARER_TOKEN}`,
-        },
-      });
+export default function Dev() {
+  const [gitHubStats, setGitHubStats] =
+    useState<GitHubContributionsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
+  useEffect(() => {
+    const now = new Date();
+    const end_date = now.toLocaleString("en-CA").split(",")[0]; // 2024-12-01, 8:59:33 p.m. -> 2024-12-01
+    now.setMonth(now.getMonth() - 1); // set new date to 1 month ago
+    const start_date = now.toLocaleString("en-CA").split(",")[0];
+
+    async function updateWithFetch() {
+      try {
+        const summary = await fetchGitHubInfo(start_date, end_date, token!);
+        setGitHubStats(summary);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
-      const gitHubSummary: GitHubContributionsResponse = await response.json();
-
-      return gitHubSummary;
-    } catch (error) {
-      throw error; // make caller handle
     }
-  }
-  const now = new Date();
-  const end_date = now.toLocaleString("en-CA").split(",")[0]; // 2024-12-01, 8:59:33 p.m. -> 2024-12-01
-  now.setMonth(now.getMonth() - 1); // set new date to 1 month ago
-  const start_date = now.toLocaleString("en-CA").split(",")[0];
 
-  const gitHubStats = await fetchGitHubSummary(start_date, end_date);
+    updateWithFetch();
+  }, []);
+
+  if (loading)
+    return (
+      <div className="w-25 h-auto">
+        <GitHubSkeleton />
+      </div>
+    );
+  if (!gitHubStats) return <div>error</div>;
+
   return (
     <div className="w-25 h-auto">
       <GitHubChart
