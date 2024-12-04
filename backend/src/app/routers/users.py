@@ -43,9 +43,9 @@ def read_project(project_id: int, db: Session = Depends(get_db)):
     return db_project
 
 @router.get("/projects", response_model=ProjectPageResponse)
-def get_projects_with_filter(tags: str, sort_by: str, limit: int, page: int, db: Session = Depends(get_db)):
+def get_projects_with_filter(tags: str, sort_by: str, limit: int, page: int, user_id: int | None = None, db: Session = Depends(get_db)): ## optional params: https://fastapi.tiangolo.com/tutorial/query-params/#optional-parameters
     tagsAsArray: Tags = tags.split(",")
-    db_projects = crud.get_projects_by_page(db=db, tags=tagsAsArray, sort_by=sort_by, limit=limit, page=page)
+    db_projects = crud.get_projects_by_page(db=db, tags=tagsAsArray, user_id=user_id, sort_by=sort_by, limit=limit, page=page)
     serialized_projects = [schemas.Project.model_validate(proj) for proj in db_projects]
 
     return ProjectPageResponse(projects=serialized_projects, limit=limit, page=page)
