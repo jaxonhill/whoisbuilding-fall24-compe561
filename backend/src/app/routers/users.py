@@ -36,7 +36,11 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 def get_users_by_username_string_query(search_string: str, db: Session = Depends(get_db)):
     db_users = crud.get_users_by_username(db=db, username_string=search_string)
 
-    return db_users
+    ## convert to user schema to keep hashed pass out of repsonse
+    response_users = []
+    response_users = [schemas.User.model_validate(user) for user in db_users]
+
+    return response_users
 
 
 # Endpoint to get a project by ID
