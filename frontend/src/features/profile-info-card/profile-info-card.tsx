@@ -2,96 +2,56 @@
 
 import Discord from "@/components/discord-icon";
 import { Button } from "@/components/ui/button";
+import { User } from "@/types/db-types";
 import { Github, Linkedin, SquarePen } from "lucide-react";
 
 interface ProfileInfoCardProps {
-    first_name: string | null;
-    last_name: string | null;
-    username: string | null;
-    bio: string | null;
-    github_username: string | null;
-    github_avatar_url: string | null;
-    linkedin_url: string | null;
-    discord_username: string | null;
+    user: User;
     is_editable?: boolean;
     onEdit?: () => void;
-    placeholder_text?: {
-        name?: string;
-        username?: string;
-        bio?: string;
-        github?: string;
-        discord?: string;
-        linkedin?: string;
-    };
 }
 
 export default function ProfileInfoCard({
-    first_name,
-    last_name,
-    username,
-    bio,
-    github_username,
-    github_avatar_url,
-    linkedin_url,
-    discord_username,
+    user,
     is_editable = false,
     onEdit,
-    placeholder_text,
 }: ProfileInfoCardProps) {
-    const defaultPlaceholders = {
-        name: "Your Name",
-        username: "Your Username",
-        bio: "Tell us about yourself...",
-        github: "GitHub Username",
-        discord: "Discord Username",
-        linkedin: "LinkedIn URL",
-    };
-
-    const placeholders = { ...defaultPlaceholders, ...placeholder_text };
-
-    const displayName = first_name && last_name 
-        ? `${first_name} ${last_name}`
-        : placeholders.name;
-
-    const displayUsername = username || placeholders.username;
-    const displayBio = bio || placeholders.bio;
-
     return (
         <section className="w-full flex flex-col gap-4">
             <img 
                 className="w-full aspect-square rounded-lg" 
-                src={github_avatar_url || "/test.png"} 
-                alt={`${displayUsername}'s avatar`} 
+                src={user.github_avatar_url} 
+                alt={`${user.username}'s avatar`} 
             />
             <div className="flex flex-col">
-                <h2 className={`text-2xl font-medium ${!first_name && !last_name ? 'text-slate-400' : ''}`}>
-                    {displayName}
+                <h2 className="text-2xl font-medium">
+                    {user.first_name} {user.last_name}
                 </h2>
-                <h3 className={`text-2xl ${username ? 'text-slate-600' : 'text-slate-400'}`}>
-                    @{displayUsername}
+                <h3 className="text-2xl text-slate-600">
+                    @{user.username}
                 </h3>
             </div>
-            <p className={`leading-loose ${bio ? 'text-slate-600' : 'text-slate-400'}`}>
-                {displayBio}
+            <p className="leading-loose text-slate-600">
+                {user.bio}
             </p>
             <div className="flex flex-col gap-2">
                 <SocialLinkContainer
-                    label={github_username || placeholders.github}
+                    label={user.github_username}
                     icon={<Github className="flex-shrink-0 h-6 w-6 stroke-slate-800" />}
-                    link={github_username ? `https://github.com/${github_username}` : "#"}
-                    isPlaceholder={!github_username}
+                    link={`https://github.com/${user.github_username}`}
+                    isPlaceholder={false}
                 />
                 <SocialLinkContainer
-                    label={linkedin_url || placeholders.linkedin}
+                    label={user.linkedin_url || "N/A"}
                     icon={<Linkedin className="flex-shrink-0 h-6 w-6 stroke-slate-800" />}
-                    link={linkedin_url || "#"}
-                    isPlaceholder={!linkedin_url}
+                    link={user.linkedin_url || "#"}
+                    isPlaceholder={!user.linkedin_url}
                 />
                 <SocialLinkContainer
-                    label={discord_username || placeholders.discord}
+                    label={user.discord_username || "N/A"}
                     icon={<Discord className="flex-shrink-0 h-6 w-6 stroke-slate-800 fill-slate-800" />}
-                    link={discord_username ? "https://discord.com/" : "#"}
-                    isPlaceholder={!discord_username}
+                    link={user.discord_username ? "https://discord.com/" : "#"}
+                    isPlaceholder={!user.discord_username}
                 />
             </div>
             {is_editable && (
