@@ -94,11 +94,11 @@ def get_projects_by_user(db: Session, user_id: int):
     return db.query(models.Project).filter(models.Project.user_id == user_id).all()
 
 
-def get_projects_by_page(db: Session, sort_by: str, limit: int, page: int):
+def get_projects_by_page(db: Session, tags: List[str], sort_by: str, limit: int, page: int):
     offset = limit * (page-1)
     if sort_by == "new":
-        ## get n number of items starting at the nth page in based on newest project first
-        objs = db.query(models.Project).order_by(desc(models.Project.created_at)).limit(limit).offset(offset).all()
+        ## get n number of items starting at the nth page in based on newest project first, '&&' is postgres overlap so find at least one commonality
+        objs = db.query(models.Project).order_by(desc(models.Project.created_at)).filter(models.Project.tags.op('&&')(tags)).limit(limit).offset(offset).all()
         print(objs)
         return objs
     else:
