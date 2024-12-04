@@ -1,8 +1,8 @@
-import { Contributor } from "../types/project-types";
+import { User } from "@/types/db-types";
 import ContributorCard from "./contributor-card";
 
 interface ContributorsContainerProps {
-	contributors: Contributor[];
+	contributors: User[];
 }
 
 export default function ContributorsContainer({ contributors }: ContributorsContainerProps) {

@@ -3,12 +3,13 @@ import SortBy from "@/features/filters/components/sort-by";
 import ProjectCard from "@/features/project-card/components/project-card";
 import { Project, User } from "@/types/db-types";
 
-const TEST_USER_1: User = {
+export const TEST_USER_1: User = {
     id: 1,
     email: "jaxoncharleshill@gmail.com",
     first_name: "Jaxon",
     last_name: "Hill",
     username: "jaxon",
+    bio: "Hey I'm Jaxon.",
     github_username: "jaxonhill",
     github_avatar_url: "https://avatars.githubusercontent.com/u/103388144?v=4",
     discord_username: "jaxon10x",
@@ -22,9 +23,10 @@ const TEST_USER_2: User = {
     first_name: "Michael",
     last_name: "Hayes",
     username: "mhayes",
+    bio: "Test",
     github_username: "mhayescs19",
     github_avatar_url: "https://avatars.githubusercontent.com/u/54915859?v=4",
-    discord_username: undefined,
+    discord_username: null,
     linkedin_url: "https://www.linkedin.com/in/michael-hayes-cs/",
     created_at: "2024-12-03T11:00:00Z",
 };
@@ -35,10 +37,11 @@ const TEST_USER_3: User = {
     first_name: "Jessica",
     last_name: "Chammas",
     username: "jessica",
+    bio: "Test",
     github_username: "Jessica-Chammas",
     github_avatar_url: "https://avatars.githubusercontent.com/u/115599417?v=4",
-    discord_username: undefined,
-    linkedin_url: undefined,
+    discord_username: null,
+    linkedin_url: null,
     created_at: "2024-12-03T12:00:00Z",
 };
 

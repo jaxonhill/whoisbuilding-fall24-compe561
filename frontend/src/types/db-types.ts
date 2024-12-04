@@ -5,9 +5,11 @@ export type User = {
     first_name: string;
     last_name: string;
     username: string;
+    bio: string;
     github_username: string;
-    discord_username: string | undefined;
-    linkedin_url: string | undefined;
+    github_avatar_url: string;
+    discord_username: string | null;
+    linkedin_url: string | null;
     created_at: string;
 }
 
@@ -19,5 +21,5 @@ export type Project = {
 	description: string;
     contributors: User[];
     tags: string[];
-    // num_of_likes: number;
+    // Nothing for likes right now, can add later if needed
 }
