@@ -23,13 +23,16 @@ class User(UserBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Base schema for Project
 class ProjectBase(BaseModel):
     title: str
     description: str
     tags: List[str]
+
+    class Config:
+        from_attributes = True
 
 # Schema for creating a new project
 class ProjectCreate(ProjectBase):
@@ -43,4 +46,12 @@ class Project(ProjectBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class ProjectPageResponse(BaseModel):
+    projects: List[Project]
+    limit: int
+    page: int
+
+    class Config:
+        from_attributes = True  # Enables compatibility with SQLAlchemy ORM
