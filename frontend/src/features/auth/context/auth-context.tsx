@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/types/common-types";
+import { User } from "@/types/db-types";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface AuthContextType {
