@@ -8,6 +8,8 @@ import { create_profile_page_link } from "@/utils/utils";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/features/auth/context/auth-context";
 
+const PLACEHOLDER_GITHUB_AVATAR_URL: string = "https://avatars.githubusercontent.com/u/103388144?v=4";
+
 export default function Navbar() {
     const { user, logout } = useAuth();
 
@@ -37,7 +39,7 @@ function LoggedInSection({ user, onLogoutButtonClick }: LoggedInSectionProps) {
 				<span>Add Project</span>
 			</a>
 			<a href={create_profile_page_link(user.username)} className="rounded-full w-8 h-8">
-				<img className="rounded-full w-full h-full" src={user.github_avatar_url} alt={`${user.username}'s avatar`} />
+				<img className="rounded-full w-full h-full" src={PLACEHOLDER_GITHUB_AVATAR_URL} alt={`${user.username}'s avatar`} />
 			</a>
             <button onClick={onLogoutButtonClick} className="text-blue-700 bg-transparent p-0 hover:underline hover:cursor-pointer">Log Out</button>
 		</div>
