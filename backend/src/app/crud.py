@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql.operators import OVERLAP
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from . import models, schemas
 from .auth import get_password_hash
 from typing import List
@@ -86,12 +86,15 @@ def get_user(db: Session, user_id: int):
 
 ## get list of users in search by partial or full username string
 def get_users_by_username(db: Session, username_string: str):
-    i_like_pattern = "%"
     ## build pattern so that query results will return potential users with case insenstive alpha characters in order
-    for letter in username_string:
-        i_like_pattern += f"{letter}%"
+    regex_pattern = f"{username_string[0]}" ## first letter must exist in pattern as an anchor
+    
+    for letter in username_string[1:]: ## list comprehension to go from index 1 to end
+        regex_pattern += f".*{letter}?" ## .* zero or many instances of letter ? optionally
 
-    return db.query(models.User).filter(models.User.username.ilike(i_like_pattern)).all()
+    print(regex_pattern)
+    ## '~*' is postgres regex operator
+    return db.query(models.User).filter(models.User.username.op('~*')(regex_pattern)).all()
 
 def get_all_users(db: Session):
     return db.query(models.User)
