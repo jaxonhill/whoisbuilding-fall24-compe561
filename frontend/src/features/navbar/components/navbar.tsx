@@ -39,7 +39,7 @@ function LoggedInSection({ user, onLogoutButtonClick }: LoggedInSectionProps) {
 			<a href={create_profile_page_link(user.username)} className="rounded-full w-8 h-8">
 				<img className="rounded-full w-full h-full" src={user.github_avatar_url} alt={`${user.username}'s avatar`} />
 			</a>
-            <button className="text-blue-700 bg-transparent p-0 hover:underline hover:cursor-pointer">Log Out</button>
+            <button onClick={onLogoutButtonClick} className="text-blue-700 bg-transparent p-0 hover:underline hover:cursor-pointer">Log Out</button>
 		</div>
 	)
 }
