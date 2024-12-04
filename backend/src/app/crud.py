@@ -86,7 +86,12 @@ def get_user(db: Session, user_id: int):
 
 ## get list of users in search by partial or full username string
 def get_users_by_username(db: Session, username_string: str):
-    return db.query(models.User).filter(models.User.username.contains(username_string)).all()
+    i_like_pattern = "%"
+    ## build pattern so that query results will return potential users with case insenstive alpha characters in order
+    for letter in username_string:
+        i_like_pattern += f"{letter}%"
+
+    return db.query(models.User).filter(models.User.username.ilike(i_like_pattern)).all()
 
 def get_all_users(db: Session):
     return db.query(models.User)
