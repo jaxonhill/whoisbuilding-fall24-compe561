@@ -10,7 +10,7 @@ WhoIsBuilding.io is an interactive web platform that enables computer science st
 - [Jessica Chammas](https://github.com/Jessica-Chammas)
 - [Michael Hayes](https://github.com/mhayescs19)
 
-## Run the Application
+## Run the Application - Backend
 
 ### Configure Postgres Database in Docker Container
 
@@ -75,3 +75,9 @@ But it needs authentication for that specific endpoint.
 So, to authenticate with our API, it sends a header Authorization with a value of Bearer plus the token.
 
 If the token contains foobar, the content of the Authorization header would be: Bearer foobar." - [FastAPI Docs](https://fastapi.tiangolo.com/tutorial/security/first-steps/#the-password-flow)
+
+## Run the Application - Frontend
+
+1. Navigate to the frontend directory -> `cd frontend`
+2. Run the development server -> `npm run dev`
+3. Use a browser to view the homepage -> `http://localhost:3000`
