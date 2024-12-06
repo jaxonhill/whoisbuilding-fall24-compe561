@@ -13,7 +13,7 @@ router = APIRouter()
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## session requires injection of current db instance
     try:
         new_user = crud.create_user(db=db, user=user)
-    except IntegrityError as e:
+    except IntegrityError as e: ## returns first violated column for unique constraint errors
         error_detail = str(e.orig)
         field_violation = error_detail[error_detail.index("(") + 1 : error_detail.index(")")]
         raise HTTPException(status_code=400, detail={
