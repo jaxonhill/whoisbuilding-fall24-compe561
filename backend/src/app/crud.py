@@ -11,11 +11,15 @@ from typing import List
 # Create a new user
 def create_user(db: Session, user: schemas.UserCreate):
     db_user = models.User(
-        name=user.name,
-        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
         username=user.username,
+        email=user.email,
         github_username=user.github_username,
-        socials=user.socials,
+        github_avatar_url=user.github_avatar_url,
+        linkedin=user.linkedin,
+        discord=user.discord,
+        biography=user.biography,
         hashed_password=get_password_hash(user.password),  # Remember to hash passwords (i think ugur wants us to)
         expertise=user.expertise,
         created_at=datetime.now(),
@@ -39,10 +43,19 @@ def get_user_by_email(db: Session, email: str):
 def update_user(db: Session, user_id: int, user_update: schemas.UserBase):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if db_user:
-        db_user.name = user_update.name
-        db_user.username = user_update.username
-        db_user.email = user_update.email
-        db_user.expertise = user_update.expertise
+        db_user = user_update.first_name
+        db_user = user_update.last_name
+        db_user = user_update.username
+        db_user = user_update.email
+        db_user = user_update.github_username
+        db_user = user_update.github_avatar_url
+        db_user = user_update.linkedin
+        db_user = user_update.discord
+        db_user = user_update.biography
+        db_user = get_password_hash(user_update.password)  # Remember to hash passwords (i think ugur wants us to)
+        db_user = user_update.expertise
+        db_user = datetime.now()
+        db_user = False
         db.commit()
         db.refresh(db_user)
     return db_user
