@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from .. import crud, schemas
 from ..database import get_db
 from app.schemas import ProjectPageResponse
@@ -10,7 +11,18 @@ router = APIRouter()
 # Endpoint to register a new user
 @router.post("/users", response_model=schemas.User)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## session requires injection of current db instance
-    return crud.create_user(db=db, user=user)
+    try:
+        new_user = crud.create_user(db=db, user=user)
+    except IntegrityError as e:
+        error_detail = str(e.orig)
+        field_violation = error_detail[error_detail.index("(") + 1 : error_detail.index(")")]
+        raise HTTPException(status_code=400, detail={
+            "error": "Data integrity error",
+            "message": f"{error_detail}",
+            "field": f"{field_violation}"
+        })
+
+
 
 @router.get("/users")
 def get_users(db: Session = Depends(get_db)):
