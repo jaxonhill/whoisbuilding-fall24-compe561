@@ -192,8 +192,6 @@ def get_avatar_image_url(github_username: str):
 
     image_link = avatar_link_wrapper['src']
 
-    print(image_link)
-
     return image_link
 
 
