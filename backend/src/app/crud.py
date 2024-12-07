@@ -43,19 +43,18 @@ def get_user_by_email(db: Session, email: str):
 def update_user(db: Session, user_id: int, user_update: schemas.UserBase):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if db_user:
-        db_user = user_update.first_name
-        db_user = user_update.last_name
-        db_user = user_update.username
-        db_user = user_update.email
-        db_user = user_update.github_username
-        db_user = user_update.github_avatar_url
-        db_user = user_update.linkedin
-        db_user = user_update.discord
-        db_user = user_update.biography
-        db_user = get_password_hash(user_update.password)  # Remember to hash passwords (i think ugur wants us to)
-        db_user = user_update.expertise
-        db_user = datetime.now()
-        db_user = False
+        db_user.first_name = user_update.first_name
+        db_user.last_name = user_update.last_name
+        db_user.username = user_update.username
+        db_user.email = user_update.email
+        db_user.github_username = user_update.github_username
+        db_user.github_avatar_url = user_update.github_avatar_url
+        db_user.linkedin = user_update.linkedin
+        db_user.discord = user_update.discord
+        db_user.biography = user_update.biography
+        db_user.hashed_password = get_password_hash(user_update.password)  # Remember to hash passwords (i think ugur wants us to)
+        db_user.expertise = user_update.expertise
+        db_user.disabled = False
         db.commit()
         db.refresh(db_user)
     return db_user

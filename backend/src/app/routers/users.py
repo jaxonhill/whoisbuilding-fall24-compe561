@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .. import crud, schemas
 from ..database import get_db
-from app.schemas import ProjectPageResponse
+from app.schemas import ProjectPageResponse, User
+from app import auth
 from app.dtos import Tags
+from typing import Annotated
 
 router = APIRouter()
 
@@ -13,6 +15,21 @@ router = APIRouter()
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## session requires injection of current db instance
     try:
         new_user = crud.create_user(db=db, user=user)
+    except IntegrityError as e: ## returns first violated column for unique constraint errors
+        error_detail = str(e.orig)
+        field_violation = error_detail[error_detail.index("(") + 1 : error_detail.index(")")]
+        raise HTTPException(status_code=400, detail={
+            "error": "Data integrity error",
+            "message": f"{error_detail}",
+            "field": f"{field_violation}"
+        })
+    
+@router.put("/users", response_model=schemas.User)
+def update_user(user: schemas.UserCreate, 
+                current_user: Annotated[User, Depends(auth.get_current_active_user)], 
+                db: Session = Depends(get_db)):
+    try:
+        update_user = crud.update_user(db=db, user_id=current_user.id, user_update=user)
     except IntegrityError as e: ## returns first violated column for unique constraint errors
         error_detail = str(e.orig)
         field_violation = error_detail[error_detail.index("(") + 1 : error_detail.index(")")]
