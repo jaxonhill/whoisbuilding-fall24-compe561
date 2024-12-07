@@ -68,13 +68,14 @@ def delete_user(db: Session, user_id: int):
     return db_user
 
 # Create a new project
-def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
+def create_project(db: Session, project: schemas.Project, user_id: int):
     print(project.tags)
     db_project = models.Project(
         title=project.title,
         description=project.description,
         tags=project.tags,
-        user_id=user_id
+        user_id=user_id,
+        created_at=project.created_at
     )
     db.add(db_project)
     db.commit()
@@ -91,6 +92,29 @@ def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
     )
 
     return project_response
+
+def update_project(db: Session, project_update: schemas.ProjectBase, project_id: int):
+    db_project = db.query(models.Project).filter(models.Project.id == project_id).first()
+
+    if db_project:
+        db_project.title = project_update.title
+        db_project.description = project_update.description
+        db_project.tags = project_update.tags
+    
+    db.commit()
+    db.refresh(db_project)
+
+    ## return schema instead of db model; is that the best practice?
+    project_response = schemas.Project(
+        id=db_project.id,
+        title=db_project.title,
+        description=db_project.description,
+        tags=db_project.tags,
+        user_id=db_project.user_id,
+        created_at=db_project.created_at
+    )
+
+    return db_project
 
 # Get a user by ID
 def get_user(db: Session, user_id: int):
@@ -137,17 +161,6 @@ def get_projects_by_page(db: Session, tags: List[str], sort_by: str, limit: int,
     else:
         objs = db.query(models.Project).order_by(models.Project.title.asc()).limit(limit).offset(offset).all()
         return objs
-
-# Update a project's information
-def update_project(db: Session, project_id: int, project_update: schemas.ProjectBase):
-    db_project = db.query(models.Project).filter(models.Project.id == project_id).first()
-    if db_project:
-        db_project.title = project_update.title
-        db_project.description = project_update.description
-        db_project.tags = ",".join(project_update.tags)
-        db.commit()
-        db.refresh(db_project)
-    return db_project
 
 # Delete a project by ID
 def delete_project(db: Session, project_id: int):

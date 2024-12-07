@@ -15,7 +15,6 @@ class UserBase(BaseModel):
     biography: str
     disabled: bool
     expertise: str
-    created_at: datetime
     disabled: bool
 
 # Schema for creating a new user
@@ -42,7 +41,6 @@ class ProjectBase(BaseModel):
 # Schema for creating a new project
 class ProjectCreate(ProjectBase):
     pass
-
 
 # Schema for returning a project
 class Project(ProjectBase):

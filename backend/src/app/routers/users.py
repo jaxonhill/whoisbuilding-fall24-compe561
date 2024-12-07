@@ -26,6 +26,7 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## s
     
     return new_user
     
+## update a user
 @router.put("/users", response_model=schemas.User)
 def update_user(user: schemas.UserCreate, 
                 current_user: Annotated[User, Depends(auth.get_current_active_user)], 
@@ -51,13 +52,28 @@ def get_users(db: Session = Depends(get_db)):
 
 # Endpoint to create a new project
 @router.post("/projects", response_model=schemas.Project)
-def create_project(project: schemas.ProjectCreate, user_id: int, db: Session = Depends(get_db)):
+def create_project(project: schemas.Project, user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db=db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return crud.create_project(db=db, project=project, user_id=user_id)
 
-#@router.put("/projects", response_model=schemas.Project)
+@router.put("/projects", response_model=schemas.Project)
+def update_project(project_update: schemas.ProjectBase, 
+                project_id: int, 
+                db: Session = Depends(get_db)):
+    try:
+        project_update = crud.update_project(db=db, project_id=project_id, project_update=project_update)
+    except IntegrityError as e: ## returns first violated column for unique constraint errors
+        error_detail = str(e.orig)
+        field_violation = error_detail[error_detail.index("(") + 1 : error_detail.index(")")]
+        raise HTTPException(status_code=400, detail={
+            "error": "Data integrity error",
+            "message": f"{error_detail}",
+            "field": f"{field_violation}"
+        })
+    
+    return project_update
 
 # Endpoint to get a user by ID
 @router.get("/users/{user_id}", response_model=schemas.User)
