@@ -9,7 +9,7 @@ from app.exceptions import GitHubUsernameException
 ONE_DAY = 1
 ON_SPACE = " "
 NO_CONTRIBUTIONS = "No"
-GITHUB_URL_STUB = "https://github.com"
+GITHUB_URL_STUB = "https://www.github.com"
 
 def contributionsUrl(github_username: str):
     """creates string interpolated github contributions url 
@@ -20,9 +20,23 @@ def contributionsUrl(github_username: str):
     Returns:
         str: url
     """
-    github_contributions_url = f"https://github.com/users/{github_username}/contributions"
+    github_contributions_url = f"{GITHUB_URL_STUB}/users/{github_username}/contributions"
 
     return github_contributions_url
+
+def get_avatar_url(github_username: str):
+    """creates string interpolated github avatar page url 
+
+    Args:
+        github_username (str): _github username
+
+    Returns:
+        str: url
+    """
+
+    github_avatar_page_url = f"{GITHUB_URL_STUB}/{github_username}"
+
+    return github_avatar_page_url
 
 def getContributionPageSoup(github_username: str) -> BeautifulSoup:
     """get page content for contribution data
@@ -167,20 +181,27 @@ def isValidGitHubUsername(github_username: str) -> bool:
     
     return response.status_code == 200
 
+def get_avatar_image_url(github_username: str):
+    avatar_url = get_avatar_url(github_username)
+
+    page_data = requests.get(avatar_url) ## get page using http
+
+    soup = BeautifulSoup(page_data.text, "html.parser") ## soupify page so html elements are accessible
+
+    avatar_link_wrapper = soup.find(class_="avatar")
+
+    image_link = avatar_link_wrapper['src']
+
+    print(image_link)
+
+    return image_link
+
+
 
 
 
 def main():
-    from_date = datetime(2024,11,17)
-    to_date = datetime(2024,11,20)
-
-    num_of_contributions = getRecentContributionHistory("mhayescs19",from_date, to_date)
-
-    ##print(num_of_contributions)
-    try:
-        isValidGitHubUsername("mhayescs191")
-    except GitHubUsernameException as e:
-        print(e) 
+    get_avatar_image_url("mhayescs19")
 
 if __name__ == "__main__":
     main()
