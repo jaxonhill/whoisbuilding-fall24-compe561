@@ -18,7 +18,7 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     github_username = Column(String, unique=True, nullable=False)
-    github_avatar_url = Column(String, nullable=False)
+    profile_image_url = Column(String, nullable=False)
     linkedin = Column(String, nullable=True)
     discord = Column(String, nullable=True)
     biography = Column(String(BIO_MAX_CHAR_LENGTH), nullable=False)
