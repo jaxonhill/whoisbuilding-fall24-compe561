@@ -24,6 +24,8 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## s
             "field": f"{field_violation}"
         })
     
+    return new_user
+    
 @router.put("/users", response_model=schemas.User)
 def update_user(user: schemas.UserCreate, 
                 current_user: Annotated[User, Depends(auth.get_current_active_user)], 
@@ -38,6 +40,8 @@ def update_user(user: schemas.UserCreate,
             "message": f"{error_detail}",
             "field": f"{field_violation}"
         })
+    
+    return update_user
 
 
 
@@ -52,6 +56,8 @@ def create_project(project: schemas.ProjectCreate, user_id: int, db: Session = D
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return crud.create_project(db=db, project=project, user_id=user_id)
+
+#@router.put("/projects", response_model=schemas.Project)
 
 # Endpoint to get a user by ID
 @router.get("/users/{user_id}", response_model=schemas.User)
