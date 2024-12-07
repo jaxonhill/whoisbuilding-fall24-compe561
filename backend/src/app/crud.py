@@ -7,15 +7,20 @@ from sqlalchemy import desc, func
 from . import models, schemas
 from .auth import get_password_hash
 from typing import List
+from app.services import github
 
 # Create a new user
 def create_user(db: Session, user: schemas.UserCreate):
     db_user = models.User(
-        name=user.name,
-        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
         username=user.username,
+        email=user.email,
         github_username=user.github_username,
-        socials=user.socials,
+        profile_image_url=github.get_avatar_image_url(user.github_username),
+        linkedin=user.linkedin,
+        discord=user.discord,
+        biography=user.biography,
         hashed_password=get_password_hash(user.password),  # Remember to hash passwords (i think ugur wants us to)
         expertise=user.expertise,
         created_at=datetime.now(),
@@ -39,10 +44,18 @@ def get_user_by_email(db: Session, email: str):
 def update_user(db: Session, user_id: int, user_update: schemas.UserBase):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if db_user:
-        db_user.name = user_update.name
+        db_user.first_name = user_update.first_name
+        db_user.last_name = user_update.last_name
         db_user.username = user_update.username
         db_user.email = user_update.email
+        db_user.github_username = user_update.github_username
+        db_user.profile_image_url = user_update.profile_image_url
+        db_user.linkedin = user_update.linkedin
+        db_user.discord = user_update.discord
+        db_user.biography = user_update.biography
+        db_user.hashed_password = get_password_hash(user_update.password)  # Remember to hash passwords (i think ugur wants us to)
         db_user.expertise = user_update.expertise
+        db_user.disabled = False
         db.commit()
         db.refresh(db_user)
     return db_user
@@ -56,13 +69,14 @@ def delete_user(db: Session, user_id: int):
     return db_user
 
 # Create a new project
-def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
+def create_project(db: Session, project: schemas.Project, user_id: int):
     print(project.tags)
     db_project = models.Project(
         title=project.title,
         description=project.description,
         tags=project.tags,
-        user_id=user_id
+        user_id=user_id,
+        created_at=project.created_at
     )
     db.add(db_project)
     db.commit()
@@ -79,6 +93,29 @@ def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
     )
 
     return project_response
+
+def update_project(db: Session, project_update: schemas.ProjectBase, project_id: int):
+    db_project = db.query(models.Project).filter(models.Project.id == project_id).first()
+
+    if db_project:
+        db_project.title = project_update.title
+        db_project.description = project_update.description
+        db_project.tags = project_update.tags
+    
+    db.commit()
+    db.refresh(db_project)
+
+    ## return schema instead of db model; is that the best practice?
+    project_response = schemas.Project(
+        id=db_project.id,
+        title=db_project.title,
+        description=db_project.description,
+        tags=db_project.tags,
+        user_id=db_project.user_id,
+        created_at=db_project.created_at
+    )
+
+    return db_project
 
 # Get a user by ID
 def get_user(db: Session, user_id: int):
@@ -125,17 +162,6 @@ def get_projects_by_page(db: Session, tags: List[str], sort_by: str, limit: int,
     else:
         objs = db.query(models.Project).order_by(models.Project.title.asc()).limit(limit).offset(offset).all()
         return objs
-
-# Update a project's information
-def update_project(db: Session, project_id: int, project_update: schemas.ProjectBase):
-    db_project = db.query(models.Project).filter(models.Project.id == project_id).first()
-    if db_project:
-        db_project.title = project_update.title
-        db_project.description = project_update.description
-        db_project.tags = ",".join(project_update.tags)
-        db.commit()
-        db.refresh(db_project)
-    return db_project
 
 # Delete a project by ID
 def delete_project(db: Session, project_id: int):

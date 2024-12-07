@@ -4,14 +4,16 @@ from datetime import datetime
 
 # Base schema for User
 class UserBase(BaseModel):
-    name: str
+    first_name: str
+    last_name: str
     email: str
     username: str
     github_username: str
-    socials: str  # JSON object as a string
+    linkedin: Optional[str] = None
+    discord: Optional[str] = None
+    biography: str
     disabled: bool
     expertise: str
-    created_at: datetime
     disabled: bool
 
 # Schema for creating a new user
@@ -21,6 +23,7 @@ class UserCreate(UserBase):
 # Schema for returning a user
 class User(UserBase):
     id: int
+    profile_image_url: str
     created_at: datetime
 
     class Config:
@@ -38,7 +41,6 @@ class ProjectBase(BaseModel):
 # Schema for creating a new project
 class ProjectCreate(ProjectBase):
     pass
-
 
 # Schema for returning a project
 class Project(ProjectBase):
