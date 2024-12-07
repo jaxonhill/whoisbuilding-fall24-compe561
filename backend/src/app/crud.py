@@ -2,8 +2,11 @@
 from datetime import datetime
 
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects.postgresql.operators import OVERLAP
+from sqlalchemy import desc
 from . import models, schemas
 from .auth import get_password_hash
+from typing import List
 
 # Create a new user
 def create_user(db: Session, user: schemas.UserCreate):
@@ -89,6 +92,25 @@ def get_project(db: Session, project_id: int):
 # Get all projects for a specific user
 def get_projects_by_user(db: Session, user_id: int):
     return db.query(models.Project).filter(models.Project.user_id == user_id).all()
+
+
+def get_projects_by_page(db: Session, tags: List[str], sort_by: str, limit: int, page: int, user_id: int | None):
+    offset = limit * (page-1)
+    ## todo build query based on specifications
+
+    if sort_by == "new":
+        if user_id:
+            ## get n number of items starting at the nth page in based on newest project first, '&&' is postgres overlap so find at least one commonality
+            objs = db.query(models.Project).order_by(desc(models.Project.created_at)).filter(models.Project.tags.op('&&')(tags), models.Project.user_id == user_id).limit(limit).offset(offset).all()
+            print(objs)
+            return objs
+        else:
+            objs = db.query(models.Project).order_by(desc(models.Project.created_at)).filter(models.Project.tags.op('&&')(tags)).limit(limit).offset(offset).all()
+            print(objs)
+            return objs
+    else:
+        objs = db.query(models.Project).order_by(models.Project.title.asc()).limit(limit).offset(offset).all()
+        return objs
 
 # Update a project's information
 def update_project(db: Session, project_id: int, project_update: schemas.ProjectBase):

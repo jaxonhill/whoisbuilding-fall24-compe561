@@ -26,3 +26,6 @@ class GitHubContributionResponse(GitHubUsername):
 
 class GitHubContributionSummaryResponse(GitHubContributionResponse, GitHubRespositoryResponse):
     summary: Optional[GitHubContributions] = None    
+
+class Tags(BaseModel):
+    tags: List[str]
