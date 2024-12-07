@@ -9,7 +9,6 @@ class UserBase(BaseModel):
     email: str
     username: str
     github_username: str
-    github_avatar_url: str
     linkedin: Optional[str] = None
     discord: Optional[str] = None
     biography: str
@@ -24,6 +23,7 @@ class UserCreate(UserBase):
 # Schema for returning a user
 class User(UserBase):
     id: int
+    profile_image_url: str
     created_at: datetime
 
     class Config:
