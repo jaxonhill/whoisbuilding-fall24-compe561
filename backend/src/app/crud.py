@@ -7,6 +7,7 @@ from sqlalchemy import desc, func
 from . import models, schemas
 from .auth import get_password_hash
 from typing import List
+from app.services import github
 
 # Create a new user
 def create_user(db: Session, user: schemas.UserCreate):
@@ -16,7 +17,7 @@ def create_user(db: Session, user: schemas.UserCreate):
         username=user.username,
         email=user.email,
         github_username=user.github_username,
-        github_avatar_url=user.github_avatar_url,
+        profile_image_url=github.get_avatar_image_url(user.github_username),
         linkedin=user.linkedin,
         discord=user.discord,
         biography=user.biography,
@@ -48,7 +49,7 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserBase):
         db_user.username = user_update.username
         db_user.email = user_update.email
         db_user.github_username = user_update.github_username
-        db_user.github_avatar_url = user_update.github_avatar_url
+        db_user.profile_image_url = user_update.profile_image_url
         db_user.linkedin = user_update.linkedin
         db_user.discord = user_update.discord
         db_user.biography = user_update.biography
