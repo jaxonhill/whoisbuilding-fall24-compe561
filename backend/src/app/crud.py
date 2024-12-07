@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql.operators import OVERLAP
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from . import models, schemas
 from .auth import get_password_hash
 from typing import List
@@ -13,6 +13,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     db_user = models.User(
         name=user.name,
         email=user.email,
+        username=user.username,
         github_username=user.github_username,
         socials=user.socials,
         hashed_password=get_password_hash(user.password),  # Remember to hash passwords (i think ugur wants us to)
@@ -39,6 +40,7 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserBase):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if db_user:
         db_user.name = user_update.name
+        db_user.username = user_update.username
         db_user.email = user_update.email
         db_user.expertise = user_update.expertise
         db.commit()
@@ -81,6 +83,18 @@ def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
 # Get a user by ID
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
+
+## get list of users in search by partial or full username string
+def get_users_by_username(db: Session, username_string: str):
+    ## build pattern so that query results will return potential users with case insenstive alpha characters in order
+    regex_pattern = f"{username_string[0]}" ## first letter must exist in pattern as an anchor
+    
+    for letter in username_string[1:]: ## list comprehension to go from index 1 to end
+        regex_pattern += f".*{letter}?" ## .* zero or many instances of letter ? optionally
+
+    print(regex_pattern)
+    ## '~*' is postgres regex operator
+    return db.query(models.User).filter(models.User.username.op('~*')(regex_pattern)).all()
 
 def get_all_users(db: Session):
     return db.query(models.User)
