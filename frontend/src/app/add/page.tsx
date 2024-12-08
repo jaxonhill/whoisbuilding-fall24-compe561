@@ -19,12 +19,10 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function AddProjectPage() {
   return (
-    <div className="flex flex-col w-full gap-16 mt-16">
-      <div className="w-full flex flex-col gap-4">
+    <div className="flex flex-col w-full gap-8 mt-16">
+      <div className="w-full flex justify-between items-center">
         <h1 className="text-3xl font-medium">Create a project</h1>
-        <p className="text-slate-700 text-xl">
-          Fill out the information below to create a new project.
-        </p>
+        <Button className="bg-blue-700 hover:bg-blue-600">Edit Preview</Button>
       </div>
       <AddProjectForm />
     </div>
@@ -38,6 +36,8 @@ const schema = z.object({
   live_site_link: z.string().url("Please enter a valid URL"),
   collaborators: z.array(z.string()),
   tags: z.array(z.string()),
+  status: z.enum(["In Progress", "Completed"]),
+  image: z.string().optional(),
 });
 
 function AddProjectForm() {
@@ -53,6 +53,8 @@ function AddProjectForm() {
       live_site_link: "",
       collaborators: [],
       tags: [],
+      status: "In Progress",
+      image: "",
     },
   });
 
@@ -63,12 +65,26 @@ function AddProjectForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid grid-cols-12 gap-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-8 pb-8">
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="font-medium text-base text-slate-950">Add Image</FormLabel>
+              <FormControl>
+                <Input type="file" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem className="col-span-4">
+            <FormItem className="w-full">
               <FormLabel className="font-medium text-base text-slate-950">Project Name *</FormLabel>
               <FormControl>
                 <Input placeholder="Enter project name" type="text" {...field} />
@@ -82,12 +98,12 @@ function AddProjectForm() {
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem className="col-span-8 row-span-3 flex flex-col">
+            <FormItem className="w-full">
               <FormLabel className="font-medium text-base text-slate-950">Project Description *</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Explain what the project is about, the purpose behind it, how long you&apos;ve been working on it, anything you want!" 
-                  className="resize-none h-full"
+                  className="resize-none h-32"
                   {...field} 
                 />
               </FormControl>
@@ -98,9 +114,26 @@ function AddProjectForm() {
 
         <FormField
           control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="font-medium text-base text-slate-950">Status</FormLabel>
+              <FormControl>
+                <select {...field} className="w-full border border-gray-300 rounded-md p-2">
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="github_link"
           render={({ field }) => (
-            <FormItem className="col-span-4">
+            <FormItem className="w-full">
               <FormLabel className="font-medium text-base text-slate-950">Github URL *</FormLabel>
               <FormControl>
                 <Input placeholder="Enter the GitHub URL of the project" type="url" {...field} />
@@ -114,7 +147,7 @@ function AddProjectForm() {
           control={form.control}
           name="live_site_link"
           render={({ field }) => (
-            <FormItem className="col-span-4">
+            <FormItem className="w-full">
               <FormLabel className="font-medium text-base text-slate-950">Live Site URL *</FormLabel>
               <FormControl>
                 <Input placeholder="Enter the URL of the live site" type="url" {...field} />
@@ -128,7 +161,7 @@ function AddProjectForm() {
           control={form.control}
           name="collaborators"
           render={({ field }) => (
-            <FormItem className="col-span-4">
+            <FormItem className="w-full">
               <FormLabel className="font-medium text-base text-slate-950">Add Collaborator</FormLabel>
               <div className="flex flex-col gap-4">
                 <div className="flex gap-2">
@@ -191,7 +224,7 @@ function AddProjectForm() {
           control={form.control}
           name="tags"
           render={({ field }) => (
-            <FormItem className="col-span-4">
+            <FormItem className="w-full">
               <FormLabel className="font-medium text-base text-slate-950">Add Tags</FormLabel>
               <div className="flex flex-col gap-4">
                 <div className="flex gap-2">
@@ -253,7 +286,7 @@ function AddProjectForm() {
         <Button
           type="submit"
           disabled={!form.formState.isValid}
-          className="col-span-4 w-full self-end p-0 items-center bg-blue-700 h-12 hover:bg-blue-600 disabled:bg-slate-300"
+          className="w-full self-end p-0 items-center bg-blue-700 h-12 hover:bg-blue-600 disabled:bg-slate-300"
         >
           <span className="text-white font-medium flex-shrink-0 text-base">Create project</span>
         </Button>
