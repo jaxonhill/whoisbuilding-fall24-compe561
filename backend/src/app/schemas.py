@@ -30,7 +30,7 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
-class UniqueFields(Enum):
+class UniqueUserFields(Enum):
     EMAIL = "email"
     USERNAME = "username"
     GITHUB_USERNAME = "github_username"
