@@ -65,7 +65,7 @@ function AddProjectForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-8 pb-8">
         <FormField
           control={form.control}
           name="image"
