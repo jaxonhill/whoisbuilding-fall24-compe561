@@ -28,3 +28,22 @@ export async function fetchGitHubInfo(
 
   throw new Error(`Response status: ${response.status}`);
 }
+
+export async function fetchIfUsernameExistsOnGitHub(
+  username: string
+): Promise<Boolean> {
+  const queryString = `?username=${username}`;
+  const response = await fetch(
+    `${API_BASE_URL}/github/validate${queryString}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  );
+
+  const github_username_valid_on_site = response.status == 200;
+
+  return github_username_valid_on_site;
+}
