@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+from enum import Enum
 
 # Base schema for User
 class UserBase(BaseModel):
@@ -28,6 +29,12 @@ class User(UserBase):
 
     class Config:
         from_attributes = True
+
+class UniqueFields(Enum):
+    EMAIL = "email"
+    USERNAME = "username"
+    GITHUB_USERNAME = "github_username"
+
 
 # Base schema for Project
 class ProjectBase(BaseModel):
