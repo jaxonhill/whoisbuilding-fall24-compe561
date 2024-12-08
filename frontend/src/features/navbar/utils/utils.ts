@@ -2,7 +2,7 @@ import { NavbarLinkInfo as NavbarLinkInfo } from "../types/types";
 
 export const NAVBAR_LINKS: NavbarLinkInfo[] = [
 	{
-		label: "Projects",
+		label: "Home",
 		link: "/",
 	},
 	{
