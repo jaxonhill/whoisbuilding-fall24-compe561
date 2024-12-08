@@ -22,7 +22,6 @@ class User(Base):
     linkedin = Column(String, nullable=True)
     discord = Column(String, nullable=True)
     biography = Column(String(BIO_MAX_CHAR_LENGTH), nullable=False)
-    expertise = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False)
     disabled = Column(Boolean, nullable=False)
 
@@ -44,7 +43,6 @@ class Project(Base):
     collaborators = relationship("Collaborators", back_populates="project")
     liked_by = relationship("Likes", back_populates="project")
 
-
 class Collaborators(Base):
     __tablename__ = 'collaborators'
 
@@ -56,7 +54,6 @@ class Collaborators(Base):
     user = relationship("User", back_populates="projects_collaborated_on")
 
 class Likes(Base):
-    # TODO: Add ON DELETE CASCADE
     __tablename__ = 'likes'
 
     id = Column(Integer, primary_key=True, index=True)

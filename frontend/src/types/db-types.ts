@@ -4,7 +4,7 @@ export type User = {
     // `hashed_password` is also a column, but this should never make it to the frontend
     first_name: string;
     last_name: string;
-    avatar_url: string;
+    profile_image_url: string;
     username: string;
     bio: string;
     github_username: string;

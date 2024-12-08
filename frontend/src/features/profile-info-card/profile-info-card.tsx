@@ -12,7 +12,7 @@ export default async function ProfileInfoCard({ user }: ProfileInfoCardProps) {
         <section className="w-full flex flex-col gap-4">
             <img 
                 className="w-full aspect-square rounded-lg" 
-                src={user.avatar_url} 
+                src={user.profile_image_url} 
                 alt={`${user.username}'s avatar`} 
             />
             <div className="flex flex-col">

@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from typing import Annotated, List
 from datetime import datetime
+from sqlalchemy.orm import Session
+from app.database import get_db
+import app.crud as crud
 
 from app.dtos import GitHubUsername, GitHubRepository, GitHubContributionResponse, GitHubContributionSummaryResponse, GitHubRespositoryResponse, GitHubContributions
 from app.services import github as github_service
@@ -10,6 +13,24 @@ from app.schemas import User
 from app.config import limiter
 
 router = APIRouter(prefix="/api")
+
+@router.get("/contributions/summary/{username}", response_model=GitHubContributionSummaryResponse)
+async def contributions_summary_by_username(username: str, start_date: datetime, end_date: datetime, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db=db, username=username)
+
+    try:
+        github_service.isValidGitHubUsername(username)
+    except GitHubUsernameException as e:
+        raise HTTPException(status_code=404, detail=e.message)
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    yearly_contributions: int = github_service.getContributionsInLastYear(username)
+    contribution_range_summary = github_service.getRecentContributionHistory(username=username,from_date=start_date, to_date=end_date)
+    recent_repositories = github_service.getMostRecentRepositories(username=username)
+
+    return GitHubContributionSummaryResponse(username=username,yearly_contributions=yearly_contributions,summary=contribution_range_summary, active_repos=recent_repositories)
 
 @router.get("/contributions/summary", response_model=GitHubContributionSummaryResponse)
 @limiter.limit("5/second", per_method=True) ## limit excessive page loads

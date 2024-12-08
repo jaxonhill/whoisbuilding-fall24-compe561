@@ -1,7 +1,7 @@
 import { Project, Status, User } from "@/types/db-types";
 
 export function create_profile_page_link(whois_username: string): string {
-    return `/user/${whois_username}`;
+    return `/profile/${whois_username}`;
 }
 
 export const fakeUsers: User[] = [
