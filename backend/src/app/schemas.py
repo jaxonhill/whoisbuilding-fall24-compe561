@@ -12,9 +12,6 @@ class UserBase(BaseModel):
     linkedin: Optional[str] = None
     discord: Optional[str] = None
     biography: str
-    disabled: bool
-    expertise: str
-    disabled: bool
 
 # Schema for creating a new user
 class UserCreate(UserBase):
@@ -34,20 +31,38 @@ class ProjectBase(BaseModel):
     title: str
     description: str
     tags: List[str]
+    created_by_user_id: int
 
     class Config:
         from_attributes = True
 
 # Schema for creating a new project
 class ProjectCreate(ProjectBase):
-    pass
+    collaborator_user_ids: List[int]
+
+class Collaborator(BaseModel):
+    id: int
+    user_id: int
+    project_id: int
+
+    class Config:
+        from_attributes = True
+
+class Like(BaseModel):
+    id: int
+    user_id: int
+    project_id: int
+
+    class Config:
+        from_attributes = True
 
 # Schema for returning a project
 class Project(ProjectBase):
     id: int
-    user_id: int
     created_at: datetime
-
+    likes: List[Like]
+    collaborators: List[Collaborator]
+    
     class Config:
         from_attributes = True
 

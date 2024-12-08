@@ -9,7 +9,7 @@ from app.dtos import Tags
 from typing import Annotated
 from app.config import limiter
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 # Endpoint to register a new user
 @router.post("/users", response_model=schemas.User)
@@ -46,11 +46,16 @@ def update_user(request: Request, user: schemas.UserCreate,
     
     return update_user
 
-
-
 @router.get("/users")
 def get_users(db: Session = Depends(get_db)):
     return crud.get_all_users(db=db)
+
+@router.get("/users/{username}")
+def get_user_by_username(username: str, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db=db, username=username)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
 
 # Endpoint to create a new project
 @router.post("/projects", response_model=schemas.Project)
@@ -94,7 +99,6 @@ def get_users_by_username_string_query(search_string: str, db: Session = Depends
     response_users = [schemas.User.model_validate(user) for user in db_users]
 
     return response_users
-
 
 # Endpoint to get a project by ID
 @router.get("/projects/{project_id}", response_model=schemas.Project)

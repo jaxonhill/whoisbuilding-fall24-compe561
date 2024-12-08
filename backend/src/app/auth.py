@@ -20,9 +20,9 @@ from .config import settings, limiter
 
 ACCESS_TOKEN_EXPIRY_MINUTES = 300
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/api/auth")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
 pass_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

@@ -18,7 +18,35 @@ export async function fetchGitHubInfo(
   );
 
   if (response.ok) {
-    const result = await response.json();
+    const result: GitHubContributionsResponse = await response.json();
+    return result;
+  }
+
+  throw new Error(`Response status: ${response.status}`);
+}
+
+export async function getGithubActivityByUsername(username: string, start_date?: string, end_date?: string) {
+  if (!start_date || !end_date) {
+    const now = new Date();
+    end_date = now.toLocaleString("en-CA").split(",")[0];
+    now.setMonth(now.getMonth() - 1);
+    start_date = now.toLocaleString("en-CA").split(",")[0];
+  }
+
+  const queryString = `?start_date=${start_date}&end_date=${end_date}`;
+  console.log(queryString);
+  const response = await fetch(
+    `${API_BASE_URL}/github/contributions/summary/${username}${queryString}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  );
+
+  if (response.ok) {
+    const result: GitHubContributionsResponse = await response.json();
     return result;
   }
 
