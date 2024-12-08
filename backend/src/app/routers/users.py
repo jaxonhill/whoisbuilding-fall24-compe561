@@ -46,6 +46,15 @@ def update_user(request: Request, user: schemas.UserCreate,
     
     return update_user
 
+@router.get("/users/validate")
+def validate_user_field(field : schemas.UniqueFields, proposed_value: str, db: Session = Depends(get_db)):
+    if crud.user_field_exists(db=db, field=field, proposed_value=proposed_value):
+        return HTTPException(status_code=400, detail={
+            "message": f"{proposed_value} already exists in another account",
+            "field": f"{field.value}"
+        })
+    else:
+        return {"message": "field is unique"}
 
 
 @router.get("/users")
