@@ -32,7 +32,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
-def user_field_exists(db: Session, field: schemas.UniqueFields, proposed_value: str):
+def user_field_exists(db: Session, field: schemas.UniqueUserFields, proposed_value: str):
     """validate whether a unique user field already exists in the db
 
     Args:
@@ -43,8 +43,8 @@ def user_field_exists(db: Session, field: schemas.UniqueFields, proposed_value: 
     Returns:
         _type_: _description_
     """
-    db_user = db.query(models.User).filter(getattr(models.User, field.value) == proposed_value).first()
-    
+    db_user = db.query(models.User).filter(getattr(models.User, field.value) == proposed_value.lower()).first()
+
     if db_user:
         return True
     else:
