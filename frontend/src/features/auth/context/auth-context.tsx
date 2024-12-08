@@ -1,7 +1,18 @@
 "use client";
 
 import { User } from "@/types/db-types";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  UserLoginError,
+  UserLoginErrorName,
+} from "@/core/errors/types/UserLoginError";
+
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface AuthContextType {
   user: User | null;
@@ -54,8 +65,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error("Login failed");
+    // check invalid responses
+    if (response.status === 401) {
+      // handle incorrect credentials
+      const { detail } = await response.json();
+      throw new UserLoginError({
+        name: UserLoginErrorName.INVALID_CREDENTIALS,
+        message: detail,
+      });
+    } else if (response.status === 429) {
+      // handle rate limit exceeded
+      const { detail } = await response.json();
+      throw new UserLoginError({
+        name: UserLoginErrorName.LOGIN_ATTEMPT_THRESHOLD_MET,
+        message: detail,
+      });
     }
 
     const data = await response.json();
@@ -74,6 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(data.access_token);
     }
   };
+
+  const signup = async (email: string, password: string) => {};
 
   const logout = () => {
     localStorage.removeItem("token");
