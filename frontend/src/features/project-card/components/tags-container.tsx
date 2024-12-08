@@ -1,15 +1,19 @@
-import Pill from "@/components/pill-select";
+import { Badge } from "@/components/ui/badge";
 
 interface TagsContainerProps {
-	tags: string[];
+  tags?: string[];
 }
 
 export default function TagsContainer({ tags }: TagsContainerProps) {
-	return (
-		<div className="pt-2 flex flex-wrap gap-2">
-			{tags.map((tag) => {
-				return <Pill key={tag} option={{ id: tag, label: tag, isSelected: true }} />
-			})}
-		</div>
-	)
+  if (!tags || tags.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {tags.map((tag) => (
+        <Badge key={tag} variant="secondary">
+          {tag}
+        </Badge>
+      ))}
+    </div>
+  );
 }

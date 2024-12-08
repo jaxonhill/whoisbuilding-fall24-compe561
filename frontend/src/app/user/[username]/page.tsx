@@ -1,6 +1,6 @@
 "use client";
 
-import { TEST_USER_1 } from "@/app/page";
+import { fakeUsers } from "@/app/page";
 import GitHubChart from "@/features/github/components/github-chart";
 import ProfileInfoCard from "@/features/profile-info-card/profile-info-card";
 
@@ -11,7 +11,7 @@ export default function UserPage({  }) {
     <div className="grid gap-8 grid-cols-12">
       <aside className="col-span-3 w-full">
         <ProfileInfoCard
-          user={TEST_USER_1}
+          user={fakeUsers[0]}
           is_editable={is_current_user}
           onEdit={() => {}}
         />

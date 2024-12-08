@@ -1,16 +1,18 @@
 import { User } from "@/types/db-types";
-import ContributorCard from "./contributor-card";
+import Contributor from "./contributor";
 
 interface ContributorsContainerProps {
-	contributors: User[];
+  contributors?: User[];
 }
 
 export default function ContributorsContainer({ contributors }: ContributorsContainerProps) {
-	return (
-		<div className="flex h-8 gap-5 items-center">
-			{contributors.map((contributor) => {
-				return <ContributorCard key={contributor.github_username} contributor={contributor} />
-			})}
-		</div>
-	);
+  if (!contributors || contributors.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {contributors.map((contributor) => (
+        <Contributor key={contributor.id} contributor={contributor} />
+      ))}
+    </div>
+  );
 }
