@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "../context/auth-context";
-import { getErrorMessage } from "@/core/errors/catchError";
 import {
   UserLoginError,
   UserLoginErrorName,
