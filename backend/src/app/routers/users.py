@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .. import crud, schemas
@@ -7,6 +7,7 @@ from app.schemas import ProjectPageResponse, User
 from app import auth
 from app.dtos import Tags
 from typing import Annotated
+from app.config import limiter
 
 router = APIRouter()
 
@@ -28,7 +29,8 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## s
     
 ## update a user
 @router.put("/users", response_model=schemas.User)
-def update_user(user: schemas.UserCreate, 
+@limiter.limit("10/minute", per_method=True) ## allow only 10 updates to account information per minute
+def update_user(request: Request, user: schemas.UserCreate, 
                 current_user: Annotated[User, Depends(auth.get_current_active_user)], 
                 db: Session = Depends(get_db)):
     try:
