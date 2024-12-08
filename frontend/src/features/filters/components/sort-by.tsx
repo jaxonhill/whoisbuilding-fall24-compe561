@@ -18,7 +18,7 @@ const sortOptions = [
 
 export default function SortBy() {
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="flex items-center gap-2">
       <span className="text-sm">Sort By:</span>
       <Select defaultValue="top-monthly">
         <SelectTrigger className="rounded-full h-8 w-32 text-slate-950 border-slate-300 focus:outline-none focus:ring-0">

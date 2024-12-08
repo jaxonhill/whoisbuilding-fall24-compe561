@@ -1,68 +1,97 @@
 import FiltersContainer from "@/features/filters/components/filters-container";
 import SortBy from "@/features/filters/components/sort-by";
 import ProjectCard from "@/features/project-card/components/project-card";
-import { Project, User } from "@/types/db-types";
+import { Project, User, Status } from "@/types/db-types";
 
-export const TEST_USER_1: User = {
-    id: 1,
-    email: "jaxoncharleshill@gmail.com",
-    first_name: "Jaxon",
-    last_name: "Hill",
-    username: "jaxon",
-    bio: "Hey I'm Jaxon.",
-    github_username: "jaxonhill",
-    github_avatar_url: "https://avatars.githubusercontent.com/u/103388144?v=4",
-    discord_username: "jaxon10x",
-    linkedin_url: "https://www.linkedin.com/in/jaxon-c-hill",
-    created_at: "2024-12-03T10:00:00Z",
-};
+export const fakeUsers: User[] = [
+    {
+      id: 1,
+      email: "john@example.com",
+      first_name: "John",
+      last_name: "Doe",
+      avatar_url: "https://i.pravatar.cc/150?img=1",
+      username: "johndoe",
+      bio: "Full-stack developer passionate about React and Node.js",
+      github_username: "johndoe",
+      discord_username: "johndoe#1234",
+      linkedin_url: "https://www.linkedin.com/in/johndoe",
+      created_at: "2023-01-01T00:00:00Z"
+    },
+    {
+      id: 2,
+      email: "jane@example.com",
+      first_name: "Jane",
+      last_name: "Smith",
+      avatar_url: "https://i.pravatar.cc/150?img=2",
+      username: "janesmith",
+      bio: "UI/UX designer with a love for clean and intuitive interfaces",
+      github_username: "janesmith",
+      discord_username: null,
+      linkedin_url: "https://www.linkedin.com/in/janesmith",
+      created_at: "2023-02-15T00:00:00Z"
+    },
+    {
+      id: 3,
+      email: "alex@example.com",
+      first_name: "Alex",
+      last_name: "Johnson",
+      avatar_url: "https://i.pravatar.cc/150?img=3",
+      username: "alexj",
+      bio: "Machine learning enthusiast and Python developer",
+      github_username: "alexj",
+      discord_username: "alexj#5678",
+      linkedin_url: "https://www.linkedin.com/in/alexjohnson",
+      created_at: "2023-03-20T00:00:00Z"
+    }
+];
+  
+  const fakeProjects: Project[] = [
+    {
+      id: 1,
+      image_url: "https://picsum.photos/seed/project1/800/450",
+      title: "WhoIsBuilding",
+      description: "A platform for CS students to share and collaborate on side projects. This innovative web application aims to connect aspiring developers and designers, fostering a community of innovation and learning. Key features include: Project showcasing with detailed descriptions, Collaboration tools for team formation, Skill-based matching for finding ideal project partners.",
+      liked_by: [fakeUsers[0], fakeUsers[1], fakeUsers[2]],
+      status: "in_progress" as Status,
+      contributors: [fakeUsers[0], fakeUsers[1]],
+      tags: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
+      live_site_link: "https://whoisbuilding.vercel.app",
+      github_link: "https://github.com/whoisbuilding/webapp"
+    },
+    {
+      id: 2,
+      image_url: "https://picsum.photos/seed/project2/800/450",
+      title: "EcoTrack",
+      description: "An environmental monitoring system that uses IoT devices to collect and analyze data on air quality, water pollution, and noise levels in urban areas. The project includes: A network of low-cost sensors deployed across the city, Real-time data visualization dashboard, Predictive models for environmental trend analysis.",
+      liked_by: [fakeUsers[1], fakeUsers[2]],
+      status: "just_starting" as Status,
+      contributors: [fakeUsers[1], fakeUsers[2]],
+      tags: ["IoT", "Python", "Machine Learning", "Data Visualization"],
+      live_site_link: "https://ecotrack.example.com",
+      github_link: "https://github.com/ecotrack/main"
+    },
+    {
+      id: 3,
+      image_url: "https://picsum.photos/seed/project3/800/450",
+      title: "CodeMentor AI",
+      description: "An AI-powered coding assistant that helps beginners learn programming concepts and debug their code. This innovative tool combines natural language processing with code analysis to provide personalized learning experiences. Features include: Interactive coding challenges with real-time feedback, AI-generated explanations of complex programming concepts, Intelligent code suggestions and error detection.",
+      liked_by: [fakeUsers[0], fakeUsers[2]],
+      status: "complete" as Status,
+      contributors: [fakeUsers[0], fakeUsers[2]],
+      tags: ["Artificial Intelligence", "Natural Language Processing", "Education Tech", "Web Development"],
+      live_site_link: "https://codementor-ai.example.com",
+      github_link: "https://github.com/codementor-ai/platform"
+    }
+];
 
-const TEST_USER_2: User = {
-    id: 2,
-    email: "michael@gmail.com",
-    first_name: "Michael",
-    last_name: "Hayes",
-    username: "mhayes",
-    bio: "Test",
-    github_username: "mhayescs19",
-    github_avatar_url: "https://avatars.githubusercontent.com/u/54915859?v=4",
-    discord_username: null,
-    linkedin_url: "https://www.linkedin.com/in/michael-hayes-cs/",
-    created_at: "2024-12-03T11:00:00Z",
-};
-
-const TEST_USER_3: User = {
-    id: 3,
-    email: "jessica@gmail.com",
-    first_name: "Jessica",
-    last_name: "Chammas",
-    username: "jessica",
-    bio: "Test",
-    github_username: "Jessica-Chammas",
-    github_avatar_url: "https://avatars.githubusercontent.com/u/115599417?v=4",
-    discord_username: null,
-    linkedin_url: null,
-    created_at: "2024-12-03T12:00:00Z",
-};
-
-const TEST_PROJECT: Project = {
-	id: 1,
-	title: "whoisbuilding.io",
-	description: "WhoIsBuilding is an interactive web platform tailored for computer science students to showcase, explore, and collaborate on projects. The goal of this platform is to create a community-driven space where students can easily upload their academic or personal projects, browse those of others, and find other students to collaborate with.",
-	live_site_link: "#",
-	github_link: "#",
-	contributors: [TEST_USER_1, TEST_USER_2, TEST_USER_3],
-	tags: ["Website", "React", "Next.js", "TypeScript", "FastAPI", "Python"],
-};
+const projects: Project[] = fakeProjects;
 
 export default function HomePage() {
 	return (
 		<div className="grid mt-16 grid-cols-12 gap-8">
 			<FiltersContainer />
 			<div className="col-span-8 flex flex-col gap-8 overflow-auto">
-				<SortBy />
-				<ProjectCard project={TEST_PROJECT} />
-				<ProjectCard project={TEST_PROJECT} />
+          {projects.map(project => <ProjectCard project={project} />)}
 			</div>
 		</div>
 	);

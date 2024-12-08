@@ -1,6 +1,7 @@
 import { Option } from "@/types/common-types";
 import SearchBar from "./search-bar";
 import SelectSection from "./select-section";
+import SortBy from "./sort-by";
 
 const tags: Option[] = [
 	{ id: "1", label: "React", isSelected: false },
@@ -15,8 +16,8 @@ const tags: Option[] = [
 export default function FiltersContainer() {
 	return (
 		<aside className="flex flex-col gap-8 w-full col-span-4 h-fit">
-			<h1 className="font-medium text-2xl w-full">Filters</h1>
 			<SearchBar />
+			<SortBy />
 			<SelectSection headingText={"Tags"} options={tags} />
 		</aside>
 	);
