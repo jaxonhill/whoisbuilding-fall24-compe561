@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Request, HTTPException, status, Depends
 from typing import Annotated, List
 from datetime import datetime
 
@@ -7,11 +7,13 @@ from app.services import github as github_service
 from app.exceptions import GitHubUsernameException
 from app import auth
 from app.schemas import User
+from app.config import limiter
 
 router = APIRouter()
 
 @router.get("/contributions/summary", response_model=GitHubContributionSummaryResponse)
-async def contributions_summary(start_date: datetime, end_date: datetime,
+@limiter.limit("5/second", per_method=True) ## limit excessive page loads
+async def contributions_summary(request: Request, start_date: datetime, end_date: datetime,
     current_user: Annotated[User, Depends(auth.get_current_active_user)],
 ):
     github_username = current_user.github_username

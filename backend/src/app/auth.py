@@ -8,13 +8,15 @@ from sqlalchemy.orm import Session
 from . import crud
 
 import jwt
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
+from fastapi import APIRouter, Request, Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
-from .config import settings
+from .config import settings, limiter
+
+
 
 ACCESS_TOKEN_EXPIRY_MINUTES = 300
 
@@ -82,7 +84,8 @@ def hash_pass(password : str):
 
 
 @router.post("/token")
-async def login_for_access_token(
+@limiter.limit("15/minute", per_method=True) ## user cannot try to log in more than 15 times per minute (will significantly slow down a brute force attack to guess a user's password)
+async def login_for_access_token(request: Request,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(get_db)
 ) -> Token:
