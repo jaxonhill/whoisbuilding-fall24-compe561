@@ -1,8 +1,5 @@
 import { API_BASE_URL } from "./locals";
 
-const BEARR_TEMP =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE3MzMyMjQ4NTR9.gn2YTDEIeU53ZLSESAraU9Br8vZE4d7YDNKbQHipe7o";
-
 export async function fetchGitHubInfo(
   start_date: string,
   end_date: string,
@@ -15,14 +12,13 @@ export async function fetchGitHubInfo(
       method: "GET",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${BEARR_TEMP}`,
+        Authorization: `Bearer ${token}`,
       },
     }
   );
 
   if (response.ok) {
-    const result: GitHubContributionsResponse = await response.json();
-
+    const result = await response.json();
     return result;
   }
 
