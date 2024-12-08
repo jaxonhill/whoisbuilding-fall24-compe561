@@ -29,7 +29,7 @@ export async function fetchGitHubInfo(
   throw new Error(`Response status: ${response.status}`);
 }
 
-export async function fetchIfUsernameExistsOnGitHub(
+export async function checkIfUsernameExistsOnGitHub(
   username: string
 ): Promise<Boolean> {
   const queryString = `?username=${username}`;
