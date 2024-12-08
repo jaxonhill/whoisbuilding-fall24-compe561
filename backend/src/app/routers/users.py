@@ -5,7 +5,7 @@ from .. import crud, schemas
 from ..database import get_db
 from app.schemas import ProjectPageResponse, User
 from app import auth
-from app.dtos import Tags
+from app.dtos import Tags, ValidateUserFieldResponse
 from typing import Annotated
 from app.config import limiter
 
@@ -47,14 +47,13 @@ def update_user(request: Request, user: schemas.UserCreate,
     return update_user
 
 @router.get("/users/validate")
-def validate_user_field(field : schemas.UniqueFields, proposed_value: str, db: Session = Depends(get_db)):
-    if crud.user_field_exists(db=db, field=field, proposed_value=proposed_value):
-        return HTTPException(status_code=400, detail={
-            "message": f"{proposed_value} already exists in another account",
-            "field": f"{field.value}"
-        })
+def validate_user_field(field: schemas.UniqueUserFields, proposed_value: str, db: Session = Depends(get_db)):
+    fieldExists: bool = crud.user_field_exists(db=db, field=field, proposed_value=proposed_value)
+    if fieldExists:
+        return ValidateUserFieldResponse(message=f"{field.value} already exists in the database", field=field.value, exists=fieldExists)
     else:
-        return {"message": "field is unique"}
+        return ValidateUserFieldResponse(message=f"{field.value} is unique", field=field.value, exists=fieldExists)
+        
 
 
 @router.get("/users")
