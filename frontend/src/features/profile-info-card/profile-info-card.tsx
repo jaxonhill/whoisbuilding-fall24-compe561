@@ -4,6 +4,7 @@ import Discord from "@/components/discord-icon";
 import { Button } from "@/components/ui/button";
 import { User } from "@/types/db-types";
 import { Github, Linkedin, SquarePen } from "lucide-react";
+import { PLACEHOLDER_AVATAR_URL } from "../navbar/components/profile-dropdown";
 
 interface ProfileInfoCardProps {
     user: User;
@@ -20,7 +21,7 @@ export default function ProfileInfoCard({
         <section className="w-full flex flex-col gap-4">
             <img 
                 className="w-full aspect-square rounded-lg" 
-                src={user.github_avatar_url} 
+                src={PLACEHOLDER_AVATAR_URL} 
                 alt={`${user.username}'s avatar`} 
             />
             <div className="flex flex-col">

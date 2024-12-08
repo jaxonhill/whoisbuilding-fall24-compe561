@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "../context/auth-context";
+import { useState } from "react";
 
 // Schema for login form
 const loginSchema = z.object({
@@ -40,6 +41,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ type }: AuthFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
   const isLogin = type === 'login';
@@ -56,6 +58,7 @@ export function AuthForm({ type }: AuthFormProps) {
 
   async function onSubmit(values: z.infer<typeof schema>) {
     try {
+      setIsLoading(true);
       if (isLogin) {
         await login(values.email, values.password);
         router.push("/");
@@ -66,6 +69,8 @@ export function AuthForm({ type }: AuthFormProps) {
       }
     } catch (error) {
       console.log(`${isLogin ? 'Login' : 'Signup'} failed: `, error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -117,9 +122,9 @@ export function AuthForm({ type }: AuthFormProps) {
               )}
             />
           )}
-          <Button className="h-12 bg-blue-700 font-medium text-base text-white hover:bg-blue-600" type="submit">
+          <PrimaryButton isLoading={isLoading} type="submit" disabled={!form.formState.isValid}>
             {isLogin ? 'Login' : 'Create account'}
-          </Button>
+          </PrimaryButton>
           <p className="text-slate-500 text-sm text-center">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <a 

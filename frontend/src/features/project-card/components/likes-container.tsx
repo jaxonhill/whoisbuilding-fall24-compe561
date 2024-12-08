@@ -27,6 +27,7 @@ export default function LikesContainer({ liked_by }: LikesContainerProps) {
 						return (
 							<img
 								className="border-2 border-white w-8 h-8 rounded-full mr-[-16px]"
+								key={liker.id}
 								src={liker.avatar_url}
 								alt={`${liker.username}'s profile picture`} 
 							/>
