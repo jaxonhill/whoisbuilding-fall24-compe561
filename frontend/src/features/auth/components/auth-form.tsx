@@ -22,12 +22,24 @@ import {
   UserLoginError,
   UserLoginErrorName,
 } from "@/core/errors/types/UserLoginError";
+import { fetchUserFieldValidation } from "@/lib/api/user";
+import { UniqueUserFields } from "@/types/db-types";
 
 // Schema for login form
 const loginSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
+  email: z
+    .string()
+    .email({
+      message: "Please enter a valid email address.",
+    })
+    .refine(async (email) => {
+      // validate the field by checking the db for existence
+      const fieldExists = await fetchUserFieldValidation(
+        UniqueUserFields.EMAIL,
+        email
+      );
+      return !fieldExists;
+    }, "Email already registered"),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
