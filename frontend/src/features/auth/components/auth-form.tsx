@@ -27,19 +27,9 @@ import { UniqueUserFields } from "@/types/db-types";
 
 // Schema for login form
 const loginSchema = z.object({
-  email: z
-    .string()
-    .email({
-      message: "Please enter a valid email address.",
-    })
-    .refine(async (email) => {
-      // validate the field by checking the db for existence
-      const fieldExists = await fetchUserFieldValidation(
-        UniqueUserFields.EMAIL,
-        email
-      );
-      return !fieldExists;
-    }, "Email already registered"),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
@@ -48,6 +38,15 @@ const loginSchema = z.object({
 // Schema for signup form
 const signupSchema = loginSchema
   .extend({
+    // add api validation on email for sign up only
+    email: loginSchema.shape.email.refine(async (email) => {
+      // validate the field by checking the db for existence
+      const fieldExists = await fetchUserFieldValidation(
+        UniqueUserFields.EMAIL,
+        email
+      );
+      return !fieldExists;
+    }, "Email already registered"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
