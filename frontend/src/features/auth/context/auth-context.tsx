@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await fetch("http://127.0.0.1:8000/auth/me", {
+          const response = await fetch("http://127.0.0.1:8000/api/auth/me", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     formData.append("username", email);
     formData.append("password", password);
 
-    const response = await fetch("http://127.0.0.1:8000/auth/token", {
+    const response = await fetch("http://127.0.0.1:8000/api/auth/token", {
       method: "POST",
       body: formData,
     });
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("token", data.access_token);
 
     // Fetch user data
-    const userResponse = await fetch("http://127.0.0.1:8000/auth/me", {
+    const userResponse = await fetch("http://127.0.0.1:8000/api/auth/me", {
       headers: {
         Authorization: `Bearer ${data.access_token}`,
       },
