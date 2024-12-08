@@ -36,6 +36,10 @@ def create_user(db: Session, user: schemas.UserCreate):
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
+# Get a user by username
+def get_user_by_username(db: Session, username: str):
+    return db.query(models.User).filter(models.User.username == username).first()
+
 # Get a user by email
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
@@ -69,27 +73,43 @@ def delete_user(db: Session, user_id: int):
     return db_user
 
 # Create a new project
-def create_project(db: Session, project: schemas.Project, user_id: int):
-    print(project.tags)
+def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
+    # Create the project
     db_project = models.Project(
         title=project.title,
         description=project.description,
         tags=project.tags,
-        user_id=user_id,
-        created_at=project.created_at
+        created_by_user_id=user_id,
     )
     db.add(db_project)
+
+    collaborators = []
+    liked_by = []
+
+    for collaborator_user_id in project.collaborator_user_ids:
+        # For each collaborator, add them to the project
+        db_collaborator = models.Collaborators(project_id=db_project.id, user_id=collaborator_user_id)
+        db.add(db_collaborator)
+        collaborators.append(db_collaborator)
+
+        # Add collaborator as likers of the project
+        db_like = models.Likes(project_id=db_project.id, user_id=collaborator_user_id)
+        db.add(db_like)
+        liked_by.append(db_like)
+
+    # Commit the changes to the database
     db.commit()
     db.refresh(db_project)
 
-    ## return schema instead of db model; is that the best practice?
     project_response = schemas.Project(
         id=db_project.id,
         title=project.title,
         description=project.description,
         tags=project.tags,
-        user_id=user_id,
-        created_at=db_project.created_at
+        created_by_user_id=user_id,
+        created_at=db_project.created_at,
+        collaborators=collaborators,
+        liked_by=liked_by
     )
 
     return project_response
@@ -170,3 +190,36 @@ def delete_project(db: Session, project_id: int):
         db.delete(db_project)
         db.commit()
     return db_project
+
+
+# Add a collaborator to a project
+def add_collaborator(db: Session, project_id: int, user_id: int):
+    db_collaborator = models.Collaborators(project_id=project_id, user_id=user_id)
+    db.add(db_collaborator)
+    db.commit()
+    db.refresh(db_collaborator)
+    return db_collaborator
+
+# Remove a collaborator from a project
+def remove_collaborator(db: Session, project_id: int, user_id: int):
+    db_collaborator = db.query(models.Collaborators).filter(models.Collaborators.project_id == project_id, models.Collaborators.user_id == user_id).first()
+    if db_collaborator:
+        db.delete(db_collaborator)
+        db.commit()
+    return db_collaborator
+
+# Add a like to a project
+def add_like(db: Session, project_id: int, user_id: int):
+    db_like = models.Likes(project_id=project_id, user_id=user_id)
+    db.add(db_like)
+    db.commit()
+    db.refresh(db_like)
+    return db_like
+
+# Remove a like from a project
+def remove_like(db: Session, project_id: int, user_id: int):
+    db_like = db.query(models.Likes).filter(models.Likes.project_id == project_id, models.Likes.user_id == user_id).first()
+    if db_like:
+        db.delete(db_like)
+        db.commit()
+    return db_like

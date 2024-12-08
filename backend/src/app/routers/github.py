@@ -9,7 +9,7 @@ from app import auth
 from app.schemas import User
 from app.config import limiter
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 @router.get("/contributions/summary", response_model=GitHubContributionSummaryResponse)
 @limiter.limit("5/second", per_method=True) ## limit excessive page loads

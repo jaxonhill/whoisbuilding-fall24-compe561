@@ -7,6 +7,7 @@ import { Project } from "@/types/db-types";
 import { fakeProjects } from "@/utils/utils";
 import { useReducer } from "react";
 import { TAGS } from "@/features/filters/components/filters-container";
+import ProjectsContainer from "@/features/project-card/components/projects-container";
 
 const projects: Project[] = fakeProjects;
 
@@ -48,11 +49,9 @@ export default function HomePage() {
 	return (
     <div className="grid mt-12 mb-16 grid-cols-12 gap-8">
 			<FiltersContainer state={state} dispatch={dispatch} />
-			<div className="col-span-8 flex flex-col gap-8 overflow-auto">
-				{projects.map((project) => (
-					<ProjectCard key={project.id} project={project} />
-				))}
-			</div>
+      <div className="col-span-8">
+        <ProjectsContainer projects={projects} />
+      </div>
 		</div>
 	);
 }

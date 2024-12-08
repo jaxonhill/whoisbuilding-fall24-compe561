@@ -8,8 +8,8 @@ export type User = {
     username: string;
     bio: string;
     github_username: string;
-    discord_username: string | null;
-    linkedin_url: string | null;
+    discord: string | null;
+    linkedin: string | null;
     created_at: string;
 }
 
