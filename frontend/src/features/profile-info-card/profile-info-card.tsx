@@ -1,7 +1,8 @@
 import Discord from "@/components/discord-icon";
 import { User } from "@/types/db-types";
-import { Github, Linkedin } from "lucide-react";
 import EditProfileButton from "./edit-profile-button";
+import { Github, Linkedin, SquarePen } from "lucide-react";
+import { PLACEHOLDER_AVATAR_URL } from "../navbar/components/profile-dropdown";
 
 interface ProfileInfoCardProps {
     user: User;

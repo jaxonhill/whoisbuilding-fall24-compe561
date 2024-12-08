@@ -7,16 +7,16 @@ export function create_profile_page_link(whois_username: string): string {
 export const fakeUsers: User[] = [
     {
         id: 1,
-        email: "john@example.com",
-        first_name: "John",
-        last_name: "Doe",
-        avatar_url: "https://i.pravatar.cc/150?img=1",
-        username: "johndoe",
+        email: "jaxoncharleshill@gmail.com",
+        first_name: "Jaxon",
+        last_name: "Hill",
+        avatar_url: "https://avatars.githubusercontent.com/u/103388144?v=4",
+        username: "jaxonhill",
         bio: "Full-stack developer passionate about React and Node.js",
-        github_username: "johndoe",
-        discord_username: "johndoe#1234",
-        linkedin_url: "https://www.linkedin.com/in/johndoe",
-        created_at: "2023-01-01T00:00:00Z"
+        github_username: "jaxonhill",
+        discord_username: "jaxon10x",
+        linkedin_url: "https://www.linkedin.com/in/jaxon-c-hill",
+        created_at: "2024-12-08T00:00:00Z"
     },
     {
         id: 2,

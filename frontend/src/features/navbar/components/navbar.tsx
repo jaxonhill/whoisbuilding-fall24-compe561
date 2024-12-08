@@ -7,8 +7,7 @@ import NavbarLink from "./navbar-link";
 import { create_profile_page_link } from "@/utils/utils";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/features/auth/context/auth-context";
-
-const PLACEHOLDER_GITHUB_AVATAR_URL: string = "https://avatars.githubusercontent.com/u/103388144?v=4";
+import ProfileDropdown from "./profile-dropdown";
 
 export default function Navbar() {
     const { user, logout } = useAuth();
@@ -20,7 +19,7 @@ export default function Navbar() {
 				{NAVBAR_LINKS.map((navbar_link) => {
 					return <NavbarLink key={navbar_link.label} navbar_link={navbar_link} />
 				})}
-				{user ? <LoggedInSection user={user} onLogoutButtonClick={logout} /> : <LoggedOutSection />}
+				{user ? <LoggedInSection user={user} logout={logout} /> : <LoggedOutSection />}
 			</div>
 		</nav>
 	);
@@ -28,19 +27,17 @@ export default function Navbar() {
 
 interface LoggedInSectionProps {
 	user: User;
-    onLogoutButtonClick: () => void;
+    logout: () => void;
 }
 
-function LoggedInSection({ user, onLogoutButtonClick }: LoggedInSectionProps) {
+function LoggedInSection({ user, logout }: LoggedInSectionProps) {
 	return (
 		<div className="flex gap-4 items-center">
 			<a href="/add" className="text-sm flex gap-1 items-center h-10 px-4 py-2 rounded bg-blue-700 font-medium text-white transition-colors duration-200 hover:bg-blue-600">
 				<Plus className="h-4 w-4 stroke-white" />
 				<span>Add Project</span>
 			</a>
-			<a href={create_profile_page_link(user.username)} className="rounded-full w-8 h-8 hover:opacity-95">
-				<img className="rounded-full w-full h-full" src={PLACEHOLDER_GITHUB_AVATAR_URL} alt={`${user.username}'s avatar`} />
-			</a>
+			<ProfileDropdown user={user} logout={logout} />
 		</div>
 	)
 }
