@@ -13,11 +13,13 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import { createUserRegistration } from "@/lib/api/user";
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User | void>;
+  signup: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -93,13 +95,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (userResponse.ok) {
-      const userData = await userResponse.json();
+      const userData: User = await userResponse.json();
+
       setUser(userData);
       setToken(data.access_token);
+      return userData;
     }
   };
 
-  const signup = async (email: string, password: string) => {};
+  const signup = async (email: string, password: string) => {
+    const registration = await createUserRegistration(email, password);
+    await login(email, password);
+  };
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -107,7 +114,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, token, login, signup, logout, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );
