@@ -40,7 +40,6 @@ def create_user_registration(db: Session, user: schemas.UserCreate):
         email=user.email,
         hashed_password=get_password_hash(user.password),
         created_at=datetime.now(),
-        disabled=False,
         is_onboarding_complete=False
         )
     
