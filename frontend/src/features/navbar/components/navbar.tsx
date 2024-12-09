@@ -10,8 +10,8 @@ import { useAuth } from "@/features/auth/context/auth-context";
 import ProfileDropdown from "./profile-dropdown";
 
 export default function Navbar() {
-    const { user, logout } = useAuth();
-
+  const { user, logout } = useAuth();
+  
 	return (
 		<nav className="sticky top-0 bg-white/90 backdrop-blur-sm h-20 flex justify-between items-center">
 			<Logo />

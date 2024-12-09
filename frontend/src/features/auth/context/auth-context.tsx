@@ -1,12 +1,25 @@
 "use client";
 
 import { User } from "@/types/db-types";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  UserLoginError,
+  UserLoginErrorName,
+} from "@/core/errors/types/UserLoginError";
+
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { createUserRegistration } from "@/lib/api/user";
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User | void>;
+  signup: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -54,8 +67,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error("Login failed");
+    // check invalid responses
+    if (response.status === 401) {
+      // handle incorrect credentials
+      const { detail } = await response.json();
+      throw new UserLoginError({
+        name: UserLoginErrorName.INVALID_CREDENTIALS,
+        message: detail,
+      });
+    } else if (response.status === 429) {
+      // handle rate limit exceeded
+      const { detail } = await response.json();
+      throw new UserLoginError({
+        name: UserLoginErrorName.LOGIN_ATTEMPT_THRESHOLD_MET,
+        message: detail,
+      });
     }
 
     const data = await response.json();
@@ -69,10 +95,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (userResponse.ok) {
-      const userData = await userResponse.json();
+      const userData: User = await userResponse.json();
+
       setUser(userData);
       setToken(data.access_token);
+      return userData;
     }
+  };
+
+  const signup = async (email: string, password: string) => {
+    const registration = await createUserRegistration(email, password);
+    await login(email, password);
   };
 
   const logout = () => {
@@ -81,7 +114,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, token, login, signup, logout, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from .models import User, Token, TokenData
-from .schemas import UserBase
+from .schemas import UserBase, User as UserSchema, UserAuth
 from .database import get_db
 from sqlalchemy.orm import Session
 from . import crud
@@ -102,7 +102,7 @@ async def login_for_access_token(request: Request,
     return Token(access_token=access_token, token_type="bearer")
 
 ## identigfies the current user
-@router.get("/me", response_model=UserBase)
+@router.get("/me", response_model=UserAuth)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):

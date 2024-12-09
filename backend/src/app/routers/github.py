@@ -88,3 +88,13 @@ def recent_active_repositories(current_user: Annotated[User, Depends(auth.get_cu
     active_repos = GitHubRespositoryResponse(active_repos=repos)
 
     return active_repos
+
+@router.get("/validate")
+def username_registered_on_github(username: str):
+    try:
+        username_registered = github_service.isValidGitHubUsername(username)
+    except GitHubUsernameException as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+
+    return HTTPException(status_code=200, detail=f"{username} is registered on github.com")
+        

@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Dict, Optional
+from app.schemas import UniqueUserFields
+
 ## data transfer object wrappers for data not represented in database
 
 class GitHubUsername(BaseModel):
@@ -29,3 +31,8 @@ class GitHubContributionSummaryResponse(GitHubContributionResponse, GitHubRespos
 
 class Tags(BaseModel):
     tags: List[str]
+
+class ValidateUserFieldResponse(BaseModel):
+    message: str
+    field: UniqueUserFields
+    exists: bool
