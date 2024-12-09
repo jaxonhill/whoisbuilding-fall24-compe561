@@ -15,9 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/features/auth/context/auth-context";
-import { fetchUserFieldValidation } from "@/lib/api/user";
+import { fetchUserFieldValidation, onboardUser } from "@/lib/api/user";
 import { UniqueUserFields } from "@/types/db-types";
 import { checkIfUsernameExistsOnGitHub } from "@/lib/api/github";
+import { UserOnboard } from "@/lib/api/schemas/userSchemas";
 
 export default function OnboardingPage() {
   return (
@@ -72,46 +73,36 @@ const schema = z.object({
       );
       return !fieldExists;
     }, "Username already registered"),
-  github: z
-    .string()
-    .superRefine(async (github_username, ctx) => {
-      if (github_username.trim().length === 0) {
+  github: z.string().superRefine(async (github_username, ctx) => {
+    if (github_username.trim().length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "GitHub username is required",
+      });
+    } else {
+      const github_username_registered_on_github =
+        await checkIfUsernameExistsOnGitHub(github_username);
+
+      if (!github_username_registered_on_github) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "GitHub username is required",
+          message: "Username provided is not valid on GitHub",
         });
       } else {
-        const github_username_registered_on_github =
-          await checkIfUsernameExistsOnGitHub(github_username);
+        const github_username_exists_in_db = await fetchUserFieldValidation(
+          UniqueUserFields.GITHUB_USERNAME,
+          github_username
+        );
 
-        if (!github_username_registered_on_github) {
-          return ctx.addIssue({
+        if (github_username_exists_in_db) {
+          ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Username provided is not valid on GitHub",
+            message: "Username is already registered to an account",
           });
-        } else {
-          const github_username_exists_in_db = await fetchUserFieldValidation(
-            UniqueUserFields.GITHUB_USERNAME,
-            github_username
-          );
-
-          if (github_username_exists_in_db) {
-            return ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "Username is already registered to an account",
-            });
-          }
         }
       }
-    })
-    .refine(async (github) => {
-      // validate the field by checking the db for existence
-      const fieldExists = await fetchUserFieldValidation(
-        UniqueUserFields.GITHUB_USERNAME,
-        github
-      );
-      return !fieldExists;
-    }, "GitHub username already registered"),
+    }
+  }),
   linkedin: z.string().optional(),
   discord: z.string().optional(),
   bio: z.string().min(1, "Biography is required"),
@@ -119,6 +110,7 @@ const schema = z.object({
 
 export function OnboardingForm() {
   const router = useRouter();
+  const { token } = useAuth();
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -134,7 +126,27 @@ export function OnboardingForm() {
   });
 
   async function onSubmit(values: z.infer<typeof schema>) {
-    // TODO: Implement form submission
+    const onboard_details: UserOnboard = {
+      first_name: values.first_name,
+      last_name: values.last_name,
+      username: values.username,
+      github_username: values.github,
+      linkedin: values.linkedin === "" ? null : (values.linkedin ?? null),
+      discord: values.discord === "" ? null : (values.discord ?? null),
+      biography: values.bio,
+      is_onboarding_complete: true,
+    };
+
+    try {
+      if (!token) {
+        console.log("Onboarding form: user not logged in");
+      }
+      await onboardUser(onboard_details, token!);
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+    }
     console.log(values);
   }
 
