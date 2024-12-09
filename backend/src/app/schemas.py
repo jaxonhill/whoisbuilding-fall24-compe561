@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+from fastapi import UploadFile
 
 # Base schema for User
 class UserBase(BaseModel):
@@ -13,9 +14,15 @@ class UserBase(BaseModel):
     discord: Optional[str] = None
     biography: str
 
+    class Config:
+        from_attributes = True
+
 # Schema for creating a new user
 class UserCreate(UserBase):
     password: str
+
+    class Config:
+        from_attributes = True
 
 # Schema for returning a user
 class User(UserBase):
@@ -32,12 +39,15 @@ class ProjectBase(BaseModel):
     description: str
     tags: List[str]
     created_by_user_id: int
+    github_link: Optional[str] = None
+    live_site_link: Optional[str] = None
 
     class Config:
         from_attributes = True
 
 # Schema for creating a new project
 class ProjectCreate(ProjectBase):
+    image_url: str | None = None
     collaborator_user_ids: List[int]
 
 class Collaborator(BaseModel):
@@ -62,6 +72,7 @@ class Project(ProjectBase):
     created_at: datetime
     likes: List[Like]
     collaborators: List[Collaborator]
+    image_url: Optional[str] = None
     
     class Config:
         from_attributes = True

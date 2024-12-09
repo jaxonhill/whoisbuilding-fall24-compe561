@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .. import crud, schemas
@@ -8,6 +8,8 @@ from app import auth
 from app.dtos import Tags
 from typing import Annotated
 from app.config import limiter
+import json
+from app.services.s3 import upload_image_to_s3
 
 router = APIRouter(prefix="/api")
 
@@ -26,7 +28,7 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## s
         })
     
     return new_user
-    
+
 ## update a user
 @router.put("/users", response_model=schemas.User)
 @limiter.limit("10/minute", per_method=True) ## allow only 10 updates to account information per minute
@@ -59,11 +61,54 @@ def get_user_by_username(username: str, db: Session = Depends(get_db)):
 
 # Endpoint to create a new project
 @router.post("/projects", response_model=schemas.Project)
-def create_project(project: schemas.Project, user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db=db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return crud.create_project(db=db, project=project, user_id=user_id)
+async def create_project(
+    current_user: Annotated[User, Depends(auth.get_current_active_user)],
+    title: str = Form(...),
+    description: str = Form(...),
+    github_link: str | None = Form(None),
+    live_site_link: str | None = Form(None),
+    image: UploadFile | None = File(None),
+    collaborators: str | None = Form(None),
+    tags: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        # Convert JSON strings back to lists
+        collaborators_list: list[str] = json.loads(collaborators) if collaborators else []
+        tags_list: list[str] = json.loads(tags)
+
+        # Process the file and other data
+        image_url: str | None = None
+        if image and image.file:
+            try:
+                image_url = upload_image_to_s3(image.file)
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+        print("Making project data")
+        project_data = schemas.ProjectCreate(
+            title=title,
+            description=description,
+            tags=tags_list,
+            created_by_user_id=current_user.id,
+            github_link=github_link,
+            live_site_link=live_site_link,
+            image_url=image_url,
+            collaborator_user_ids=collaborators_list,
+        )
+        print("About to create project")
+        # Error happened here right below
+        response = crud.create_project(db=db, project=project_data)
+        print("Created project")
+
+        if response is None:
+            raise HTTPException(status_code=400, detail="Failed to create project")
+        return response
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON format for collaborators or tags")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/projects", response_model=schemas.Project)
 def update_project(project_update: schemas.ProjectBase, 

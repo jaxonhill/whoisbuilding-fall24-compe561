@@ -8,28 +8,31 @@ from . import models, schemas
 from .auth import get_password_hash
 from typing import List
 from app.services import github
+from app.services.s3 import upload_image_to_s3
 
 # Create a new user
 def create_user(db: Session, user: schemas.UserCreate):
+    print("Creating user")
     db_user = models.User(
         first_name=user.first_name,
         last_name=user.last_name,
-        username=user.username,
         email=user.email,
+        username=user.username,
+        hashed_password=get_password_hash(user.password),
         github_username=user.github_username,
         profile_image_url=github.get_avatar_image_url(user.github_username),
         linkedin=user.linkedin,
         discord=user.discord,
         biography=user.biography,
-        hashed_password=get_password_hash(user.password),  # Remember to hash passwords (i think ugur wants us to)
-        expertise=user.expertise,
         created_at=datetime.now(),
-        disabled=False
     )
-    print(db_user.hashed_password)
+    print("User created")
     db.add(db_user)
+    print("User added")
     db.commit()
+    print("User committed")
     db.refresh(db_user)
+    print("User refreshed")
     return db_user
 
 # Get a user by ID
@@ -58,8 +61,6 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserBase):
         db_user.discord = user_update.discord
         db_user.biography = user_update.biography
         db_user.hashed_password = get_password_hash(user_update.password)  # Remember to hash passwords (i think ugur wants us to)
-        db_user.expertise = user_update.expertise
-        db_user.disabled = False
         db.commit()
         db.refresh(db_user)
     return db_user
@@ -73,13 +74,16 @@ def delete_user(db: Session, user_id: int):
     return db_user
 
 # Create a new project
-def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
+def create_project(db: Session, project: schemas.ProjectCreate) -> schemas.Project | None:
     # Create the project
     db_project = models.Project(
         title=project.title,
         description=project.description,
+        github_link=project.github_link,
+        live_site_link=project.live_site_link,
+        image_url=project.image_url,
         tags=project.tags,
-        created_by_user_id=user_id,
+        created_by_user_id=project.created_by_user_id,
     )
     db.add(db_project)
 
@@ -101,18 +105,19 @@ def create_project(db: Session, project: schemas.ProjectCreate, user_id: int):
     db.commit()
     db.refresh(db_project)
 
-    project_response = schemas.Project(
+    return schemas.Project(
         id=db_project.id,
-        title=project.title,
-        description=project.description,
-        tags=project.tags,
-        created_by_user_id=user_id,
+        title=db_project.title,
+        description=db_project.description,
+        tags=db_project.tags,
+        created_by_user_id=db_project.created_by_user_id,
         created_at=db_project.created_at,
         collaborators=collaborators,
-        liked_by=liked_by
+        likes=liked_by,
+        github_link=db_project.github_link,
+        live_site_link=db_project.live_site_link,
+        image_url=db_project.image_url
     )
-
-    return project_response
 
 def update_project(db: Session, project_update: schemas.ProjectBase, project_id: int):
     db_project = db.query(models.Project).filter(models.Project.id == project_id).first()
@@ -135,7 +140,7 @@ def update_project(db: Session, project_update: schemas.ProjectBase, project_id:
         created_at=db_project.created_at
     )
 
-    return db_project
+    return project_response
 
 # Get a user by ID
 def get_user(db: Session, user_id: int):

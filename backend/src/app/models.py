@@ -1,4 +1,3 @@
-
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
@@ -23,7 +22,6 @@ class User(Base):
     discord = Column(String, nullable=True)
     biography = Column(String(BIO_MAX_CHAR_LENGTH), nullable=False)
     created_at = Column(DateTime, nullable=False)
-    disabled = Column(Boolean, nullable=False)
 
     projects = relationship("Project", back_populates="owner")
     projects_collaborated_on = relationship("Collaborators", back_populates="user")
@@ -35,6 +33,9 @@ class Project(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
+    github_link = Column(String, nullable=True)
+    live_site_link = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)
     tags = Column(ARRAY(String), nullable=False)  # postgres array of strings
     created_by_user_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
