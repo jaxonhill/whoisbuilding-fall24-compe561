@@ -11,6 +11,7 @@ export type User = {
   discord: string | null;
   linkedin: string | null;
   created_at: string;
+  is_onboarding_complete: boolean;
 };
 
 // unique fields from db
