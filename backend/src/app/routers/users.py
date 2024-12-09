@@ -26,6 +26,37 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## s
         })
     
     return new_user
+
+@router.post("/users/register", response_model=schemas.UserRegisterResponse)
+def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)): ## session requires injection of current db instance
+    try:
+        new_user = crud.create_user_registration(db=db, user=user)
+    except IntegrityError as e: ## returns first violated column for unique constraint errors
+        error_detail = str(e.orig)
+        field_violation = error_detail[error_detail.index("(") + 1 : error_detail.index(")")]
+        raise HTTPException(status_code=400, detail={
+            "error": "Data integrity error",
+            "message": f"{error_detail}",
+            "field": f"{field_violation}"
+        })
+    
+    return new_user
+
+@router.post("/users/onboard", response_model=schemas.User)
+def onboard_user(user_to_onboard: schemas.UserOnboard, current_user: Annotated[User, Depends(auth.get_current_active_user)], db: Session = Depends(get_db)):
+    user_id = current_user.id
+    try:
+        onboarded_user = crud.onboard_user(db=db, user=user_to_onboard, user_id=user_id)
+    except IntegrityError as e: ## returns first violated column for unique constraint errors
+        error_detail = str(e.orig)
+        field_violation = error_detail[error_detail.index("(") + 1 : error_detail.index(")")]
+        raise HTTPException(status_code=400, detail={
+            "error": "Data integrity error",
+            "message": f"{error_detail}",
+            "field": f"{field_violation}"
+        })
+    
+    return onboarded_user
     
 ## update a user
 @router.put("/users", response_model=schemas.User)
