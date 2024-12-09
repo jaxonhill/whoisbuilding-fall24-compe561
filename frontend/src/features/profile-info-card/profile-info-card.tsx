@@ -1,26 +1,19 @@
-"use client";
-
 import Discord from "@/components/discord-icon";
-import { Button } from "@/components/ui/button";
 import { User } from "@/types/db-types";
+import EditProfileButton from "./edit-profile-button";
 import { Github, Linkedin, SquarePen } from "lucide-react";
+import { PLACEHOLDER_AVATAR_URL } from "../navbar/components/profile-dropdown";
 
 interface ProfileInfoCardProps {
     user: User;
-    is_editable?: boolean;
-    onEdit?: () => void;
 }
 
-export default function ProfileInfoCard({
-    user,
-    is_editable = false,
-    onEdit,
-}: ProfileInfoCardProps) {
+export default async function ProfileInfoCard({ user }: ProfileInfoCardProps) {
     return (
         <section className="w-full flex flex-col gap-4">
             <img 
                 className="w-full aspect-square rounded-lg" 
-                src={user.github_avatar_url} 
+                src={user.profile_image_url} 
                 alt={`${user.username}'s avatar`} 
             />
             <div className="flex flex-col">
@@ -42,29 +35,19 @@ export default function ProfileInfoCard({
                     isPlaceholder={false}
                 />
                 <SocialLinkContainer
-                    label={user.linkedin_url || "N/A"}
+                    label={user.linkedin || "N/A"}
                     icon={<Linkedin className="flex-shrink-0 h-6 w-6 stroke-slate-800" />}
-                    link={user.linkedin_url || "#"}
-                    isPlaceholder={!user.linkedin_url}
+                    link={user.linkedin || "#"}
+                    isPlaceholder={!user.linkedin}
                 />
                 <SocialLinkContainer
-                    label={user.discord_username || "N/A"}
+                    label={user.discord || "N/A"}
                     icon={<Discord className="flex-shrink-0 h-6 w-6 stroke-slate-800 fill-slate-800" />}
-                    link={user.discord_username ? "https://discord.com/" : "#"}
-                    isPlaceholder={!user.discord_username}
+                    link={user.discord ? "https://discord.com/" : "#"}
+                    isPlaceholder={!user.discord}
                 />
             </div>
-            {is_editable && (
-                <div className="w-full pt-4">
-                    <Button
-                        onClick={onEdit}
-                        className="flex gap-2 w-full p-0 items-center bg-blue-700 h-12 hover:bg-blue-600"
-                    >
-                        <SquarePen className="h-6 w-6 stroke-white flex-shrink-0" />
-                        <span className="text-white font-medium flex-shrink-0 text-base">Edit Profile</span>
-                    </Button>
-                </div>
-            )}
+            <EditProfileButton username={user.username} />
         </section>
     );
 }

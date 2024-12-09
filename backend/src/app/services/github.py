@@ -87,8 +87,17 @@ def getMostRecentRepositories(github_username: str) -> List[GitHubRepository]:
     """
     contribution_page = getContributionPageSoup(github_username)
     active_repositories_list = contribution_page.find(class_='wb-break-word')
+
+    if active_repositories_list is None:
+        return []
+
     ##print(active_repositories_list)
     parsedRepositories = []
+
+    # Added because not everyone has active repositories
+    if active_repositories_list is None:
+        return []
+
     for repo in active_repositories_list.children:
         if isinstance(repo, Tag) and repo.name == 'a':
             name = repo.text

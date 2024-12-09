@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from typing import Annotated, List
 from datetime import datetime
+from sqlalchemy.orm import Session
+from app.database import get_db
+import app.crud as crud
 
 from app.dtos import GitHubUsername, GitHubRepository, GitHubContributionResponse, GitHubContributionSummaryResponse, GitHubRespositoryResponse, GitHubContributions
 from app.services import github as github_service
@@ -9,26 +12,28 @@ from app import auth
 from app.schemas import User
 from app.config import limiter
 
-router = APIRouter()
+router = APIRouter(prefix="")
 
-@router.get("/contributions/summary", response_model=GitHubContributionSummaryResponse)
-@limiter.limit("5/second", per_method=True) ## limit excessive page loads
-async def contributions_summary(request: Request, start_date: datetime, end_date: datetime,
-    current_user: Annotated[User, Depends(auth.get_current_active_user)],
-):
-    github_username = current_user.github_username
+@router.get("/contributions/summary/{username}", response_model=GitHubContributionSummaryResponse)
+async def contributions_summary_by_username(username: str, start_date: datetime, end_date: datetime, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db=db, username=username)
+
+    if db_user is None:
+        print("User not found")
+        raise HTTPException(status_code=404, detail="User not found")
+
+    github_username = db_user.github_username
 
     try:
-        github_service.isValidGitHubUsername(github_username) ## validate that the username exists
+        github_service.isValidGitHubUsername(github_username)
     except GitHubUsernameException as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message) 
+        raise HTTPException(status_code=404, detail=e.message)
     
     yearly_contributions: int = github_service.getContributionsInLastYear(github_username)
-    contribution_range_summary = github_service.getRecentContributionHistory(github_username=github_username,from_date=start_date, to_date=end_date)
-    recent_repositories = github_service.getMostRecentRepositories(github_username=github_username)
+    contribution_range_summary = github_service.getRecentContributionHistory(github_username, start_date, end_date)
+    recent_repositories = github_service.getMostRecentRepositories(github_username)
 
-    return GitHubContributionSummaryResponse(username=github_username,yearly_contributions=yearly_contributions,summary=contribution_range_summary, active_repos=recent_repositories)
-
+    return GitHubContributionSummaryResponse(username=username,yearly_contributions=yearly_contributions,summary=contribution_range_summary, active_repos=recent_repositories)
 
 @router.get("/contributions/past-year", response_model=GitHubContributionResponse)
 async def contributions_in_past_year(

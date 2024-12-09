@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 from enum import Enum
+from fastapi import UploadFile
 
 # Base schema for User
 class UserBase(BaseModel):
@@ -69,20 +70,42 @@ class ProjectBase(BaseModel):
     title: str
     description: str
     tags: List[str]
+    created_by_user_id: int
+    github_link: Optional[str] = None
+    live_site_link: Optional[str] = None
 
     class Config:
         from_attributes = True
 
 # Schema for creating a new project
 class ProjectCreate(ProjectBase):
-    pass
+    image_url: str | None = None
+    collaborator_user_ids: List[int]
+
+class Collaborator(BaseModel):
+    id: int
+    user_id: int
+    project_id: int
+
+    class Config:
+        from_attributes = True
+
+class Like(BaseModel):
+    id: int
+    user_id: int
+    project_id: int
+
+    class Config:
+        from_attributes = True
 
 # Schema for returning a project
 class Project(ProjectBase):
     id: int
-    user_id: int
     created_at: datetime
-
+    likes: List[Like]
+    collaborators: List[Collaborator]
+    image_url: Optional[str] = None
+    
     class Config:
         from_attributes = True
 

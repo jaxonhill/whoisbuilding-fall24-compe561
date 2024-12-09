@@ -16,22 +16,19 @@ const sortOptions = [
   { value: "oldest", label: "Oldest" },
 ] as const;
 
-export default function SortBy() {
+export default function SortBy({ value, onChange }: { value: string, onChange: (sortOption: string) => void }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm">Sort By:</span>
-      <Select defaultValue="top-monthly">
-        <SelectTrigger className="rounded-full h-8 w-32 text-slate-950 border-slate-300 focus:outline-none focus:ring-0">
+      <Select value={value} onValueChange={(value) => onChange(value)}>
+        <SelectTrigger className="h-12 text-base px-4 w-full text-slate-950 border-slate-300 focus:outline-none focus:ring-0">
           <SelectValue placeholder="Select sort" />
         </SelectTrigger>
         <SelectContent>
           {sortOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
+            <SelectItem className="text-base py-2" key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-    </div>
   );
 }

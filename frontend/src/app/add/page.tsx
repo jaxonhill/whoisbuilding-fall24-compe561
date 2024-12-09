@@ -16,6 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/features/auth/context/auth-context";
 import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { createProject } from "@/lib/api/projects";
 
 export default function AddProjectPage() {
   return (
@@ -34,17 +36,18 @@ const schema = z.object({
   description: z.string().min(1, "Project description is required"),
   github_link: z.string().url("Please enter a valid GitHub URL"),
   live_site_link: z.string().url("Please enter a valid URL"),
-  collaborators: z.array(z.string()),
-  tags: z.array(z.string()),
-  status: z.enum(["In Progress", "Completed"]),
-  image: z.string().optional(),
+  collaborators: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+  image: z.instanceof(File).optional(),
 });
 
-function AddProjectForm() {
-  const router = useRouter();
-  const { token } = useAuth();
+export type ProjectFormValues = z.infer<typeof schema>;
 
-  const form = useForm<z.infer<typeof schema>>({
+function AddProjectForm() {
+  const { token, user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<ProjectFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       title: "",
@@ -53,14 +56,20 @@ function AddProjectForm() {
       live_site_link: "",
       collaborators: [],
       tags: [],
-      status: "In Progress",
-      image: "",
+      image: undefined,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof schema>) {
+  async function onSubmit(values: ProjectFormValues) {
     // TODO: Implement form submission to backend
-    console.log(values);
+    setIsLoading(true);
+    const response = await createProject(values, token!);
+    if (response.error) {
+      console.error(response.error);
+    } else {
+      console.log(response);
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -73,7 +82,18 @@ function AddProjectForm() {
             <FormItem className="w-full">
               <FormLabel className="font-medium text-base text-slate-950">Add Image</FormLabel>
               <FormControl>
-                <Input type="file" {...field} />
+                <Input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={(e) => {
+                    field.onChange(e.target.files?.[0]);
+                  }}
+                  onBlur={() => {
+                    field.onBlur();
+                  }}
+                  name={field.name}
+                  ref={field.ref}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -106,23 +126,6 @@ function AddProjectForm() {
                   className="resize-none h-32"
                   {...field} 
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel className="font-medium text-base text-slate-950">Status</FormLabel>
-              <FormControl>
-                <select {...field} className="w-full border border-gray-300 rounded-md p-2">
-                  <option value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
-                </select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -174,7 +177,7 @@ function AddProjectForm() {
                           e.preventDefault();
                           const input = e.target as HTMLInputElement;
                           if (input.value.trim()) {
-                            field.onChange([...field.value, input.value.trim()]);
+                            field.onChange([...field.value ?? [], input.value.trim()]);
                             input.value = '';
                           }
                         }
@@ -186,7 +189,7 @@ function AddProjectForm() {
                     onClick={(e) => {
                       const input = e.currentTarget.previousElementSibling?.querySelector('input');
                       if (input?.value.trim()) {
-                        field.onChange([...field.value, input.value.trim()]);
+                        field.onChange([...field.value ?? [], input.value.trim()]);
                         input.value = '';
                       }
                     }}
@@ -196,7 +199,7 @@ function AddProjectForm() {
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {field.value.map((collaborator, index) => (
+                  {field.value?.map((collaborator, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-1 bg-slate-100 px-3 py-1 rounded-md"
@@ -205,7 +208,7 @@ function AddProjectForm() {
                       <button
                         type="button"
                         onClick={() => {
-                          field.onChange(field.value.filter((_, i) => i !== index));
+                          field.onChange(field.value?.filter((_, i) => i !== index));
                         }}
                         className="text-slate-500 hover:text-slate-700"
                       >
@@ -237,7 +240,7 @@ function AddProjectForm() {
                           e.preventDefault();
                           const input = e.target as HTMLInputElement;
                           if (input.value.trim()) {
-                            field.onChange([...field.value, input.value.trim()]);
+                            field.onChange([...field.value ?? [], input.value.trim()]);
                             input.value = '';
                           }
                         }
@@ -249,7 +252,7 @@ function AddProjectForm() {
                     onClick={(e) => {
                       const input = e.currentTarget.previousElementSibling?.querySelector('input');
                       if (input?.value.trim()) {
-                        field.onChange([...field.value, input.value.trim()]);
+                        field.onChange([...field.value ?? [], input.value.trim()]);
                         input.value = '';
                       }
                     }}
@@ -259,7 +262,7 @@ function AddProjectForm() {
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {field.value.map((tag, index) => (
+                  {field.value?.map((tag, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-1 bg-slate-100 px-3 py-1 rounded-md"
@@ -268,7 +271,7 @@ function AddProjectForm() {
                       <button
                         type="button"
                         onClick={() => {
-                          field.onChange(field.value.filter((_, i) => i !== index));
+                          field.onChange(field.value?.filter((_, i) => i !== index));
                         }}
                         className="text-slate-500 hover:text-slate-700"
                       >

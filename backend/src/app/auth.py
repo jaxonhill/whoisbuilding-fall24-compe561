@@ -20,9 +20,9 @@ from .config import settings, limiter
 
 ACCESS_TOKEN_EXPIRY_MINUTES = 300
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/api/auth")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
 pass_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -72,8 +72,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
 async def get_current_active_user(
     current_user: Annotated[User, Depends(get_current_user)],
 ): ## depends injects current user
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 # hash endpoint to generate test passwords for db data

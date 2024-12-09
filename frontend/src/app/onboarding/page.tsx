@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, PrimaryButton } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -284,15 +284,14 @@ export function OnboardingForm() {
           )}
         />
 
-        <Button
-          onClick={() => {}}
-          //disabled={!form.formState.isValid}
-          className="col-span-4 w-full self-end p-0 items-center bg-blue-700 h-12 hover:bg-blue-600 disabled:bg-slate-300"
+        <PrimaryButton
+            isLoading={false}
+            type="submit"
+            //disabled={!form.formState.isValid}
+            className="col-span-4 w-full self-end p-0 items-center bg-blue-700 h-12 hover:bg-blue-600 disabled:bg-slate-300"
         >
-          <span className="text-white font-medium flex-shrink-0 text-base">
-            Create profile
-          </span>
-        </Button>
+            <span className="text-white font-medium flex-shrink-0 text-base">Create profile</span>
+        </PrimaryButton>
       </form>
     </Form>
   );

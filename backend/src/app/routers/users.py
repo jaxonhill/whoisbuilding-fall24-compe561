@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .. import crud, schemas
@@ -8,8 +8,10 @@ from app import auth
 from app.dtos import Tags, ValidateUserFieldResponse
 from typing import Annotated
 from app.config import limiter
+import json
+from app.services.s3 import upload_image_to_s3
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 # Endpoint to register a new user
 @router.post("/users", response_model=schemas.User)
@@ -85,19 +87,67 @@ def validate_user_field(field: schemas.UniqueUserFields, proposed_value: str, db
     else:
         return ValidateUserFieldResponse(message=f"{field.value} is unique", field=field.value, exists=fieldExists)
         
-
-
 @router.get("/users")
 def get_users(db: Session = Depends(get_db)):
     return crud.get_all_users(db=db)
 
-# Endpoint to create a new project
-@router.post("/projects", response_model=schemas.Project)
-def create_project(project: schemas.Project, user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db=db, user_id=user_id)
+@router.get("/users/{username}")
+def get_user_by_username(username: str, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db=db, username=username)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return crud.create_project(db=db, project=project, user_id=user_id)
+    return db_user
+
+# Endpoint to create a new project
+@router.post("/projects", response_model=schemas.Project)
+async def create_project(
+    current_user: Annotated[User, Depends(auth.get_current_active_user)],
+    title: str = Form(...),
+    description: str = Form(...),
+    github_link: str | None = Form(None),
+    live_site_link: str | None = Form(None),
+    image: UploadFile | None = File(None),
+    collaborators: str | None = Form(None),
+    tags: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        # Convert JSON strings back to lists
+        collaborators_list: list[str] = json.loads(collaborators) if collaborators else []
+        tags_list: list[str] = json.loads(tags)
+
+        # Process the file and other data
+        image_url: str | None = None
+        if image and image.file:
+            try:
+                image_url = upload_image_to_s3(image.file)
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+        print("Making project data")
+        project_data = schemas.ProjectCreate(
+            title=title,
+            description=description,
+            tags=tags_list,
+            created_by_user_id=current_user.id,
+            github_link=github_link,
+            live_site_link=live_site_link,
+            image_url=image_url,
+            collaborator_user_ids=collaborators_list,
+        )
+        print("About to create project")
+        # Error happened here right below
+        response = crud.create_project(db=db, project=project_data)
+        print("Created project")
+
+        if response is None:
+            raise HTTPException(status_code=400, detail="Failed to create project")
+        return response
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON format for collaborators or tags")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/projects", response_model=schemas.Project)
 def update_project(project_update: schemas.ProjectBase, 
@@ -134,7 +184,6 @@ def get_users_by_username_string_query(search_string: str, db: Session = Depends
 
     return response_users
 
-
 # Endpoint to get a project by ID
 @router.get("/projects/{project_id}", response_model=schemas.Project)
 def read_project(project_id: int, db: Session = Depends(get_db)):
@@ -146,9 +195,9 @@ def read_project(project_id: int, db: Session = Depends(get_db)):
     return db_project
 
 @router.get("/projects", response_model=ProjectPageResponse)
-def get_projects_with_filter(tags: str, sort_by: str, limit: int, page: int, user_id: int | None = None, db: Session = Depends(get_db)): ## optional params: https://fastapi.tiangolo.com/tutorial/query-params/#optional-parameters
+def get_projects_with_filter(tags: str, sort_by: str, limit: int, page: int, username: str, db: Session = Depends(get_db)): ## optional params: https://fastapi.tiangolo.com/tutorial/query-params/#optional-parameters
     tagsAsArray: Tags = tags.split(",")
-    db_projects = crud.get_projects_by_page(db=db, tags=tagsAsArray, user_id=user_id, sort_by=sort_by, limit=limit, page=page)
+    db_projects = crud.get_projects_by_page(db=db, tags=tagsAsArray, username=username, sort_by=sort_by, limit=limit, page=page)
     serialized_projects = [schemas.Project.model_validate(proj) for proj in db_projects]
 
     return ProjectPageResponse(projects=serialized_projects, limit=limit, page=page)

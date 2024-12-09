@@ -3,7 +3,7 @@ import SearchBar from "./search-bar";
 import SelectSection from "./select-section";
 import SortBy from "./sort-by";
 
-const tags: Option[] = [
+export const TAGS: Option[] = [
 	{ id: "1", label: "React", isSelected: false },
 	{ id: "2", label: "Next.js", isSelected: false },
 	{ id: "3", label: "Python", isSelected: false },
@@ -13,12 +13,49 @@ const tags: Option[] = [
 	{ id: "7", label: "Machine Learning", isSelected: false },
 ];
 
-export default function FiltersContainer() {
+interface FiltersContainerProps {
+	state: {
+		searchText: string;
+		sortBy: string;
+		tags: Option[];
+	};
+	dispatch: React.Dispatch<{ type: string; payload?: any }>;
+}
+
+export default function FiltersContainer({ state, dispatch }: FiltersContainerProps) {
 	return (
-		<aside className="flex flex-col gap-8 w-full col-span-4 h-fit">
-			<SearchBar />
-			<SortBy />
-			<SelectSection headingText={"Tags"} options={tags} />
+		<aside className="sticky top-32 flex flex-col gap-8 w-full col-span-4 h-fit">
+			<SearchBarSection
+				value={state.searchText}
+				onChange={(text) => dispatch({ type: 'SET_SEARCH_TEXT', payload: text })}
+			/>
+			<SortBySection
+				value={state.sortBy}
+				onChange={(sortOption) => dispatch({ type: 'SET_SORT_BY', payload: sortOption })}
+			/>
+			<SelectSection
+				headingText={"Filter by tags"}
+				options={state.tags}
+				onToggleTag={(tag) => dispatch({ type: 'TOGGLE_TAG', payload: tag })}
+			/>
 		</aside>
+	);
+}
+
+function SearchBarSection({ value, onChange }: { value: string, onChange: (text: string) => void }) {
+	return (
+		<div className="flex flex-col gap-2">
+			<h2 className="font-medium text-base">Search</h2>
+			<SearchBar value={value} onChange={onChange} />
+		</div>
+	);
+}
+
+function SortBySection({ value, onChange }: { value: string, onChange: (sortOption: string) => void }) {
+	return (
+		<div className="flex flex-col gap-2">
+			<h2 className="font-medium text-base">Sort By</h2>
+			<SortBy value={value} onChange={onChange} />
+		</div>
 	);
 }
