@@ -31,8 +31,6 @@ class UserAuth(BaseModel):
     biography: Optional[str]
     is_onboarding_complete: bool
     profile_image_url: Optional[str] = None
-    expertise: Optional[str] = None
-    disabled: bool
 
 ## Schema for filling out onboarding
 class UserOnboard(BaseModel):
@@ -53,8 +51,6 @@ class User(UserBase, UserOnboard):
     id: int
     created_at: datetime
     profile_image_url: str
-    expertise: Optional[str] = None
-    disabled: bool
     
     class Config:
         from_attributes = True
