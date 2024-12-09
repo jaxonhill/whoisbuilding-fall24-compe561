@@ -32,6 +32,37 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def create_user_registration(db: Session, user: schemas.UserCreate):
+    db_user = models.User(
+        email=user.email,
+        hashed_password=get_password_hash(user.password),
+        created_at=datetime.now(),
+        disabled=False,
+        is_onboarding_complete=False
+        )
+    
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user
+
+def onboard_user(db: Session, user: schemas.UserOnboard, user_id: int):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        db_user.first_name = user.first_name
+        db_user.last_name = user.last_name
+        db_user.username = user.username
+        db_user.github_username = user.github_username
+        db_user.profile_image_url = github.get_avatar_image_url(user.github_username)
+        if user.linkedin is not None: db_user.linkedin = user.linkedin
+        if user.discord is not None: db_user.discord = user.discord
+        db_user.biography = user.biography
+        db_user.is_onboarding_complete = True
+        db.commit()
+        db.refresh(db_user)
+    return db_user
+
 def user_field_exists(db: Session, field: schemas.UniqueUserFields, proposed_value: str):
     """validate whether a unique user field already exists in the db
 
