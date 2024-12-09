@@ -44,6 +44,7 @@ const schema = z.object({
 export type ProjectFormValues = z.infer<typeof schema>;
 
 function AddProjectForm() {
+  const router = useRouter();
   const { token, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -66,10 +67,12 @@ function AddProjectForm() {
     const response = await createProject(values, token!);
     if (response.error) {
       console.error(response.error);
+      return;
     } else {
       console.log(response);
     }
     setIsLoading(false);
+    router.push("/");
   }
 
   return (
