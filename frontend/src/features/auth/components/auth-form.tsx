@@ -22,7 +22,7 @@ import {
   UserLoginErrorName,
 } from "@/core/errors/types/UserLoginError";
 import { fetchUserFieldValidation } from "@/lib/api/user";
-import { UniqueUserFields } from "@/types/db-types";
+import { UniqueUserFields, User } from "@/types/db-types";
 
 // Schema for login form
 const loginSchema = z.object({
@@ -58,7 +58,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ type }: AuthFormProps) {
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const isLogin = type === "login";
@@ -77,9 +77,18 @@ export function AuthForm({ type }: AuthFormProps) {
     try {
       if (isLogin) {
         try {
-          await login(values.email, values.password);
+          const user_void = await login(values.email, values.password);
 
-          router.push("/");
+          if (user_void) {
+            const user: User = user_void;
+            if (user.is_onboarding_complete) {
+              // ready to access site
+              router.push("/");
+            } else {
+              // still needs to onboard
+              router.push("/onboarding");
+            }
+          }
           router.refresh();
         } catch (error) {
           if (error instanceof UserLoginError) {
@@ -101,9 +110,11 @@ export function AuthForm({ type }: AuthFormProps) {
             }
           }
         }
-        router.refresh();
+        //router.refresh();
       } else {
-        // Handle signup logic here
+        await signup(values.email, values.password);
+        router.push("/onboarding");
+        router.refresh();
         console.log("Signup values:", values);
       }
     } catch (error) {
