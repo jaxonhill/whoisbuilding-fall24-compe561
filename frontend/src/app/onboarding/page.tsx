@@ -285,12 +285,14 @@ export function OnboardingForm() {
         />
 
         <PrimaryButton
-            isLoading={false}
-            type="submit"
-            //disabled={!form.formState.isValid}
-            className="col-span-4 w-full self-end p-0 items-center bg-blue-700 h-12 hover:bg-blue-600 disabled:bg-slate-300"
+          isLoading={false}
+          disabled={false}
+          type="submit"
+          className="col-span-4 w-full self-end p-0 items-center bg-blue-700 h-12 hover:bg-blue-600 disabled:bg-slate-300"
         >
-            <span className="text-white font-medium flex-shrink-0 text-base">Create profile</span>
+          <span className="text-white font-medium flex-shrink-0 text-base">
+            Create profile
+          </span>
         </PrimaryButton>
       </form>
     </Form>

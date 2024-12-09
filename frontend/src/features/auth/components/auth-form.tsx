@@ -192,8 +192,8 @@ export function AuthForm({ type }: AuthFormProps) {
               )}
             />
           )}
-          <PrimaryButton isLoading={isLoading} type="submit" disabled={!form.formState.isValid}>
-            {isLogin ? 'Login' : 'Create account'}
+          <PrimaryButton isLoading={isLoading} type="submit" disabled={false}>
+            {isLogin ? "Login" : "Create account"}
           </PrimaryButton>
           <p className="text-slate-500 text-sm text-center">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
