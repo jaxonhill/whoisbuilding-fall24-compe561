@@ -10,7 +10,7 @@ BIO_MAX_CHAR_LENGTH = 140
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
@@ -30,7 +30,7 @@ class User(Base):
 class Project(Base):
     __tablename__ = 'projects'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     github_link = Column(String, nullable=True)
@@ -47,9 +47,9 @@ class Project(Base):
 class Collaborators(Base):
     __tablename__ = 'collaborators'
 
-    id = Column(Integer, primary_key=True, index=True)
-    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE", onupdate="CASCADE"))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
 
     project = relationship("Project", back_populates="collaborators")
     user = relationship("User", back_populates="projects_collaborated_on")
@@ -57,9 +57,9 @@ class Collaborators(Base):
 class Likes(Base):
     __tablename__ = 'likes'
 
-    id = Column(Integer, primary_key=True, index=True)
-    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE", onupdate="CASCADE"))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
 
     project = relationship("Project", back_populates="liked_by")
     user = relationship("User", back_populates="liked_projects")
