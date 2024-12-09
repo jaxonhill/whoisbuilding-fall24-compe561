@@ -54,7 +54,7 @@ function LoggedInSection({ user, onLogoutButtonClick }: LoggedInSectionProps) {
       >
         <img
           className="rounded-full w-full h-full"
-          src={user.profile_image_url}
+          src={user.profile_image_url || PLACEHOLDER_GITHUB_AVATAR_URL}
           alt={`${user.username}'s avatar`}
         />
       </a>
