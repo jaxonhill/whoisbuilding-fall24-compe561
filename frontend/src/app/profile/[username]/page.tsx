@@ -33,7 +33,7 @@ export default async function UserPage({ params }: { params: { username: string 
           yearly_contributions={githubData.yearly_contributions!}
           active_repos={githubData.active_repos!}
         />
-        <ProjectsContainer projects={projects} />
+        {projects.length > 0 ? <ProjectsContainer projects={projects} /> : <div className="text-center text-slate-500">No projects found</div>}
       </div>
     </div>
   )

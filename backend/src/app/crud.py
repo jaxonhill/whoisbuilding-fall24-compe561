@@ -233,9 +233,9 @@ def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.Filt
     
     ## handle sort by filter
     if sort_by == dtos.FilterPageBy.NEW:
-        db_query = db.query(models.Projects).order_by(desc(models.Project.created_at))
+        db_query = db.query(models.Project).order_by(desc(models.Project.created_at))
     elif sort_by == dtos.FilterPageBy.OLD:
-        db_query = db.query(models.Projects).order_by(models.Project.created_at)
+        db_query = db.query(models.Project).order_by(models.Project.created_at)
 
     ## handle user filter
     if username is not None:

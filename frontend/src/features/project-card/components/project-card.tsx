@@ -24,7 +24,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 				<LikesContainer liked_by={project.liked_by} />
 			</div>
 			<p className="text-slate-800 leading-8 pb-2">
-					{project.description}
+				{project.description}
 			</p>
 			<ContributorsContainer contributors={project.contributors} />
 			<TagsContainer tags={project.tags} />
