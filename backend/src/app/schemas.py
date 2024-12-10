@@ -98,8 +98,8 @@ class Like(BaseModel):
 class Project(ProjectBase):
     id: int
     created_at: datetime
-    likes: list[Like]
-    collaborators: list[Collaborator]
+    liked_by: List[Like]
+    collaborators: List[Collaborator]
     image_url: Optional[str] = None
     
     class Config:
