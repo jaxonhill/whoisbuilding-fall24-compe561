@@ -7,6 +7,9 @@ interface LikesContainerProps {
 
 export default function LikesContainer({ liked_by }: LikesContainerProps) {
 	const isLiked: boolean = true;
+	if (liked_by.length === 0) {
+		return null;
+	}
 	const displayedLikers = liked_by.slice(0, 3); // Limit to 3 likers
 
 	return (
@@ -28,7 +31,7 @@ export default function LikesContainer({ liked_by }: LikesContainerProps) {
 							<img
 								className="border-2 border-white w-8 h-8 rounded-full mr-[-16px]"
 								key={liker.id}
-								src={liker.avatar_url}
+								src={liker.profile_image_url}
 								alt={`${liker.username}'s profile picture`} 
 							/>
 						);
