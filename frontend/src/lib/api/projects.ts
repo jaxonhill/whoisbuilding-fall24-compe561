@@ -1,4 +1,4 @@
-import { Project } from "@/types/db-types";
+import { PaginatedProjects, Project } from "@/types/db-types";
 import { API_BASE_URL } from "./locals";
 import { ProjectFormValues } from "@/app/add/page";
 
@@ -44,7 +44,7 @@ type GetProjectsParams = {
     username?: string;
 }
 
-export async function getProjects({limit, page, sort_by, tags, username}: GetProjectsParams): Promise<Project[]> {
+export async function getProjects({limit, page, sort_by, tags, username}: GetProjectsParams): Promise<PaginatedProjects> {
     const url = new URL(`${API_BASE_URL}/projects?limit=${limit}&page=${page}&sort_by=${sort_by}`);
     if (tags && tags.length > 0) {
         url.searchParams.set("tags", tags.join(","));
@@ -53,5 +53,5 @@ export async function getProjects({limit, page, sort_by, tags, username}: GetPro
         url.searchParams.set("username", username);
     }
     const response = await fetch(url.toString());
-    return response.json() as Promise<Project[]>;
+    return response.json() as Promise<PaginatedProjects>;
 }

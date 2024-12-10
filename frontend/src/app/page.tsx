@@ -2,7 +2,7 @@
 
 import FiltersContainer from "@/features/filters/components/filters-container";
 import { Option } from "@/types/common-types";
-import { Project } from "@/types/db-types";
+import { PaginatedProjects, Project } from "@/types/db-types";
 import { useEffect, useReducer, useState } from "react";
 import { TAGS } from "@/features/filters/components/filters-container";
 import ProjectsContainer from "@/features/project-card/components/projects-container";
@@ -46,13 +46,13 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const projects = await getProjects({
+      const paginationResponse: PaginatedProjects = await getProjects({
         limit: 10,
         page: 1,
         sort_by: state.sortBy,
         tags: state.tags.filter((tag) => tag.isSelected).map((tag) => tag.label),
       });
-      setProjects(projects);
+      setProjects(paginationResponse.projects);
     };
     fetchProjects();
   }, [state]);

@@ -1,8 +1,8 @@
-import { User } from "@/types/db-types";
+import { UserDisplay } from "@/types/db-types";
 import { Heart } from "lucide-react";
 
 interface LikesContainerProps {
-	liked_by: User[];
+	liked_by: UserDisplay[];
 }
 
 export default function LikesContainer({ liked_by }: LikesContainerProps) {
@@ -30,7 +30,7 @@ export default function LikesContainer({ liked_by }: LikesContainerProps) {
 						return (
 							<img
 								className="border-2 border-white w-8 h-8 rounded-full mr-[-16px]"
-								key={liker.id}
+								key={liker.username}
 								src={liker.profile_image_url}
 								alt={`${liker.username}'s profile picture`} 
 							/>
