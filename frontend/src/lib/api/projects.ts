@@ -1,3 +1,4 @@
+import { Project } from "@/types/db-types";
 import { API_BASE_URL } from "./locals";
 import { ProjectFormValues } from "@/app/add/page";
 
@@ -31,4 +32,19 @@ export async function createProject(project: ProjectFormValues, token: string) {
     });
 
     return response.json();
+}
+
+type SortByOption = "top_all_time" | "top_monthly" | "top_weekly" | "top_daily" | "newest" | "oldest";
+
+type GetProjectsParams = {
+    limit: number;
+    page: number;
+    sort_by: SortByOption;
+    tags?: string[];
+    username?: string;
+}
+
+export async function getProjects({limit, page, sort_by, tags, username}: GetProjectsParams): Promise<Project[]> {
+    const response = await fetch(`${API_BASE_URL}/projects?limit=${limit}&page=${page}&sort_by=${sort_by}&tags=${tags}&username=${username}`);
+    return response.json() as Promise<Project[]>;
 }

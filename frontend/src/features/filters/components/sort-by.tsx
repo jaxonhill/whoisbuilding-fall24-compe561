@@ -16,9 +16,11 @@ const sortOptions = [
   { value: "oldest", label: "Oldest" },
 ] as const;
 
-export default function SortBy({ value, onChange }: { value: string, onChange: (sortOption: string) => void }) {
+export type SortByOption = "top-monthly" | "top-weekly" | "top-daily" | "newest" | "oldest";
+
+export default function SortBy({ value, onChange }: { value: SortByOption, onChange: (sortOption: SortByOption) => void }) {
   return (
-      <Select value={value} onValueChange={(value) => onChange(value)}>
+      <Select value={value} onValueChange={(value) => onChange(value as SortByOption)}>
         <SelectTrigger className="h-12 text-base px-4 w-full text-slate-950 border-slate-300 focus:outline-none focus:ring-0">
           <SelectValue placeholder="Select sort" />
         </SelectTrigger>

@@ -1,26 +1,25 @@
 "use client";
 
 import FiltersContainer from "@/features/filters/components/filters-container";
-import ProjectCard from "@/features/project-card/components/project-card";
 import { Option } from "@/types/common-types";
 import { Project } from "@/types/db-types";
-import { fakeProjects } from "@/utils/utils";
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { TAGS } from "@/features/filters/components/filters-container";
 import ProjectsContainer from "@/features/project-card/components/projects-container";
-
-const projects: Project[] = fakeProjects;
+import { getProjects } from "@/lib/api/projects";
+import { SortByOption } from "@/features/filters/components/sort-by";
 
 // Define the initial state with explicit types
 const initialState: {
   searchText: string;
-  sortBy: string;
+  sortBy: SortByOption;
   tags: Option[];
 } = {
-  searchText: '',
-  sortBy: 'top-monthly',
+  searchText: "",
+  sortBy: "newest",
   tags: TAGS.map((tag) => ({...tag, isSelected: false})),
 };
+
 // Define the reducer function
 function filterReducer(state: typeof initialState, action: { type: string; payload?: any }) {
   switch (action.type) {
@@ -43,8 +42,20 @@ function filterReducer(state: typeof initialState, action: { type: string; paylo
 
 export default function HomePage() {
 	const [state, dispatch] = useReducer(filterReducer, initialState);
+  const [projects, setProjects] = useState<Project[]>([]);
 
-  console.log(state);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const projects = await getProjects({
+        limit: 10,
+        page: 1,
+        sort_by: state.sortBy,
+        tags: state.tags.filter((tag) => tag.isSelected).map((tag) => tag.label),
+      });
+      setProjects(projects);
+    };
+    fetchProjects();
+  }, [state]);
 
 	return (
     <div className="grid mt-12 mb-16 grid-cols-12 gap-8">
