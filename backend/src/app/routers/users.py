@@ -5,7 +5,7 @@ from .. import crud, schemas
 from ..database import get_db
 from app.schemas import ProjectPageResponse, User
 from app import auth
-from app.dtos import Tags, ValidateUserFieldResponse
+from app.dtos import Tags, ValidateUserFieldResponse, FilterPageBy
 from typing import Annotated
 from app.config import limiter
 import json
@@ -195,7 +195,7 @@ def read_project(project_id: int, db: Session = Depends(get_db)):
     return db_project
 
 @router.get("/projects", response_model=ProjectPageResponse)
-def get_projects_with_filter(tags: str, sort_by: str, limit: int, page: int, username: str, db: Session = Depends(get_db)): ## optional params: https://fastapi.tiangolo.com/tutorial/query-params/#optional-parameters
+def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, username: str | None = None, tags: str | None = None, db: Session = Depends(get_db)): ## optional params: https://fastapi.tiangolo.com/tutorial/query-params/#optional-parameters
     tagsAsArray: Tags = tags.split(",")
     db_projects = crud.get_projects_by_page(db=db, tags=tagsAsArray, username=username, sort_by=sort_by, limit=limit, page=page)
     serialized_projects = [schemas.Project.model_validate(proj) for proj in db_projects]
