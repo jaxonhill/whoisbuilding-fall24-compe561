@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql.operators import OVERLAP
 from sqlalchemy import desc, func, and_
-from . import models, schemas
+from . import models, schemas, dtos
 from .auth import get_password_hash
 from typing import List
 from app.services import github
@@ -226,31 +226,65 @@ def get_projects_by_user(db: Session, user_id: int):
     return db.query(models.Project).filter(models.Project.user_id == user_id).all()
 
 
-def get_projects_by_page(db: Session, tags: List[str], sort_by: str, limit: int, page: int, username: str | None):
+def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.FilterPageBy, limit: int, page: int, username: str | None):
     offset = limit * (page-1)
+
+    ## build query by filter type
     
-    # Get user_id from username
-    user = get_user_by_username(db, username)
-    if not user:
-        return []  # or handle the case where the user is not found
+    ## handle sort by filter
+    if sort_by == dtos.FilterPageBy.NEW:
+        db_query = db.query(models.Projects).order_by(desc(models.Project.created_at))
+    elif sort_by == dtos.FilterPageBy.OLD:
+        db_query = db.query(models.Projects).order_by(models.Project.created_at)
 
-    # Get project_ids where the user is a collaborator
-    project_ids = db.query(models.Collaborators.project_id).filter(models.Collaborators.user_id == user.id).subquery()
+    ## handle user filter
+    if username is not None:
+        # Get user_id from username
+        user = get_user_by_username(db, username)
+        # Get project_ids where the user is a collaborator
 
-    # Build the query based on specifications
-    if sort_by == "new":
-        objs = db.query(models.Project).order_by(desc(models.Project.created_at)).filter(
-            and_(
-                models.Project.tags.op('&&')(tags),
-                models.Project.id.in_(project_ids)
-            )
-        ).limit(limit).offset(offset).all()
+        project_ids = db.query(models.Collaborators.project_id).filter(models.Collaborators.user_id == user.id).subquery()
+        db_query = db_query.filter(models.Project.id.in_(project_ids))
+        
+    ## handle tags
+    db_query = db_query.filter(models.Project.tags.op('&&')(tags))
+        
+    projects = db_query.limit(limit).offset(offset).all()
+
+    return projects
+
+    """
+    if user is None:
+        db_projects = db.query(models.Project).order_by(desc(models.Project.created_at)).filter()
     else:
-        objs = db.query(models.Project).order_by(models.Project.title.asc()).filter(
-            models.Project.id.in_(project_ids)
-        ).limit(limit).offset(offset).all()
+        # Get user_id from username
+        user = get_user_by_username(db, username)
+        if not user:
+            return []  # or handle the case where the user is not found
+        
+        # Get user_id from username
+        user = get_user_by_username(db, username)
+        # Get project_ids where the user is a collaborator
+        project_ids = db.query(models.Collaborators.project_id).filter(models.Collaborators.user_id == user.id).subquery()
+
+        # Build the query based on specifications
+        if sort_by == "new":
+            if tags is None:
+                objs = db.query(models.Project).order_by(desc(models.Project.created_at)).filter(models.Project.id.in_(project_ids)).limit(limit).offset(offset).all()
+            else:
+                objs = db.query(models.Project).order_by(desc(models.Project.created_at)).filter(
+                    and_(
+                        models.Project.tags.op('&&')(tags),
+                        models.Project.id.in_(project_ids)
+                    )
+                ).limit(limit).offset(offset).all()
+        else:
+            objs = db.query(models.Project).order_by(models.Project.title.asc()).filter(
+                models.Project.id.in_(project_ids)
+            ).limit(limit).offset(offset).all()
 
     return objs
+    """
 
 # Delete a project by ID
 def delete_project(db: Session, project_id: int):
