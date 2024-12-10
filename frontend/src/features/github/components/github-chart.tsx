@@ -121,19 +121,17 @@ export default function GitHubChart({
         </div>
         <div className="flex flex-wrap gap-2 leading-none text-muted-foreground">
           {active_repos.map((repository, index) => (
-            <>
-              <a
-                key={index}
-                className="flex flex-row"
-                target="_blank"
-                href={repository.link}
-              >
-                <BookMarked className="h-4 w-4" />
-                <span className="pl-1">{`${repository.name}${
-                  index < active_repos.length - 1 && ", "
-                }`}</span>
-              </a>
-            </>
+            <a
+              key={repository.name}
+              className="flex flex-row"
+              target="_blank"
+              href={repository.link}
+            >
+              <BookMarked className="h-4 w-4" />
+              <span className="pl-1">{`${repository.name}${
+                index < active_repos.length - 1 && ", "
+              }`}</span>
+            </a>
           ))}
         </div>
       </CardFooter>
