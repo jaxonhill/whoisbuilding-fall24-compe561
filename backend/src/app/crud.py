@@ -1,7 +1,7 @@
 # app/crud.py
 from datetime import datetime
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.dialects.postgresql.operators import OVERLAP
 from sqlalchemy import desc, func, and_
 from . import models, schemas, dtos
@@ -230,12 +230,12 @@ def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.Filt
     offset = limit * (page-1)
 
     ## build query by filter type
-    
+
     ## handle sort by filter
     if sort_by == dtos.FilterPageBy.NEW:
-        db_query = db.query(models.Projects).order_by(desc(models.Project.created_at))
+        db_query = db.query(models.Project).order_by(desc(models.Project.created_at))
     elif sort_by == dtos.FilterPageBy.OLD:
-        db_query = db.query(models.Projects).order_by(models.Project.created_at)
+        db_query = db.query(models.Project).order_by(models.Project.created_at)
 
     ## handle user filter
     if username is not None:
@@ -247,9 +247,12 @@ def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.Filt
         db_query = db_query.filter(models.Project.id.in_(project_ids))
         
     ## handle tags
-    db_query = db_query.filter(models.Project.tags.op('&&')(tags))
+    if tags is not None: db_query = db_query.filter(models.Project.tags.op('&&')(tags))
         
-    projects = db_query.limit(limit).offset(offset).all()
+    projects = db_query.options(
+        joinedload(models.Project.liked_by),  # Fetch related likes
+        joinedload(models.Project.collaborators)  # Fetch related collaborators
+    ).limit(limit).offset(offset).all() # Fetch related collaboratorsall()
 
     return projects
 

@@ -98,7 +98,7 @@ class Like(BaseModel):
 class Project(ProjectBase):
     id: int
     created_at: datetime
-    likes: List[Like]
+    liked_by: List[Like]
     collaborators: List[Collaborator]
     image_url: Optional[str] = None
     
