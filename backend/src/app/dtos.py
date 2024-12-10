@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Dict, Optional
 from app.schemas import UniqueUserFields
+from enum import Enum
 
 ## data transfer object wrappers for data not represented in database
 
@@ -36,3 +37,7 @@ class ValidateUserFieldResponse(BaseModel):
     message: str
     field: UniqueUserFields
     exists: bool
+
+class FilterPageBy(Enum):
+    NEW = "newest"
+    OLD = "oldest"
