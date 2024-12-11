@@ -60,7 +60,7 @@ export default function HomePage() {
   console.log(projects);
 
 	return (
-    <div className="grid mt-12 mb-16 grid-cols-12 gap-8">
+    <div className="grid mt-8 mb-16 grid-cols-12 gap-8">
 			<FiltersContainer state={state} dispatch={dispatch} />
       <div className="col-span-8">
         {projects.length > 0 ? <ProjectsContainer projects={projects} /> : <div className="text-center text-slate-500">No projects found</div>}

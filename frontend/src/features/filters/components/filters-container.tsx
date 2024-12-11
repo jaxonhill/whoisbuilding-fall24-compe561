@@ -1,7 +1,7 @@
 import { Option } from "@/types/common-types";
 import SearchBar from "./search-bar";
 import SelectSection from "./select-section";
-import SortBy from "./sort-by";
+import SortBy, { SortByOption } from "./sort-by";
 
 export const TAGS: Option[] = [
 	{ id: "1", label: "React", isSelected: false },
@@ -16,7 +16,7 @@ export const TAGS: Option[] = [
 interface FiltersContainerProps {
 	state: {
 		searchText: string;
-		sortBy: string;
+		sortBy: SortByOption;
 		tags: Option[];
 	};
 	dispatch: React.Dispatch<{ type: string; payload?: any }>;
@@ -24,7 +24,7 @@ interface FiltersContainerProps {
 
 export default function FiltersContainer({ state, dispatch }: FiltersContainerProps) {
 	return (
-		<aside className="sticky top-32 flex flex-col gap-8 w-full col-span-4 h-fit">
+		<aside className="sticky top-28 flex flex-col gap-8 w-full col-span-4 h-fit">
 			<SearchBarSection
 				value={state.searchText}
 				onChange={(text) => dispatch({ type: 'SET_SEARCH_TEXT', payload: text })}
@@ -51,7 +51,7 @@ function SearchBarSection({ value, onChange }: { value: string, onChange: (text:
 	);
 }
 
-function SortBySection({ value, onChange }: { value: string, onChange: (sortOption: string) => void }) {
+function SortBySection({ value, onChange }: { value: SortByOption, onChange: (sortOption: SortByOption) => void }) {
 	return (
 		<div className="flex flex-col gap-2">
 			<h2 className="font-medium text-base">Sort By</h2>

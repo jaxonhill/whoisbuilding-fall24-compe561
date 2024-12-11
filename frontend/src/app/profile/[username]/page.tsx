@@ -20,7 +20,7 @@ export default async function UserPage({ params }: { params: { username: string 
   const projects = paginatedProjects.projects;
 
   return (
-    <div className="grid gap-8 grid-cols-12">
+    <div className="grid mt-8 mb-16 gap-8 grid-cols-12">
       <aside className="col-span-3 w-full">
         <ProfileInfoCard user={user} />
       </aside>
