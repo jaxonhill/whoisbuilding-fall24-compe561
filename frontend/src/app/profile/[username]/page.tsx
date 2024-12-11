@@ -25,8 +25,7 @@ export default async function UserPage({ params }: { params: { username: string 
         <ProfileInfoCard user={user} />
       </aside>
       <div className="col-span-9">
-        <GithubChart 
-          gitHubUsername={githubData.username} 
+        <GithubChart
           chartData={githubData.summary!.contributions_by_date}
           from_date={githubData.summary!.from_date}
           to_date={githubData.summary!.to_date}
@@ -34,7 +33,8 @@ export default async function UserPage({ params }: { params: { username: string 
           yearly_contributions={githubData.yearly_contributions!}
           active_repos={githubData.active_repos!}
         />
-        <div className="pt-8 w-full">
+        <div className="pt-8 w-full flex flex-col gap-6">
+          <h1 className="text-2xl">Projects</h1>
           {projects.length > 0 ? <ProjectsContainer projects={projects} /> : <div className="text-center text-slate-500">No projects found</div>}
         </div>
       </div>
