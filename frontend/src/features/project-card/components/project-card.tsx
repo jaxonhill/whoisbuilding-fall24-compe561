@@ -6,7 +6,7 @@ import ContributorsContainer from "./collaborators-container";
 import TagsContainer from "./tags-container";
 import { useAuth } from "@/features/auth/context/auth-context";
 import { useRouter } from "next/navigation";
-import { likeProject } from "@/lib/api/likes";
+import { likeProject, unlikeProject } from "@/lib/api/likes";
 import { toast } from "@/hooks/use-toast";
 
 interface ProjectCardProps {
@@ -29,7 +29,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 			router.push("/login");
 		} else {
 			try {
-				likeProject(project.id, user.id);
+				if (isLiked) {
+					unlikeProject(project.id, user.id);
+				} else {
+					likeProject(project.id, user.id);
+				}
 				router.refresh();
 			} catch (error) {
 				console.error("Failed to like project", error);
