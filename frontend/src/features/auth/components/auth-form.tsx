@@ -80,10 +80,9 @@ export function AuthForm({ type }: AuthFormProps) {
       setIsLoading(true);
       if (isLogin) {
         try {
-          const user_void = await login(values.email, values.password);
+          const user = await login(values.email, values.password);
 
-          if (user_void) {
-            const user: User = user_void;
+          if (user) {
             if (user.is_onboarding_complete) {
               // ready to access site
               router.push("/");
@@ -92,6 +91,10 @@ export function AuthForm({ type }: AuthFormProps) {
               router.push("/onboarding");
             }
           }
+          toast({
+            title: "Login Successful",
+            description: "You are now logged in.",
+          });
           router.refresh();
         } catch (error) {
           if (error instanceof UserLoginError) {
