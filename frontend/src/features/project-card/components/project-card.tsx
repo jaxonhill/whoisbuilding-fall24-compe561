@@ -2,7 +2,7 @@ import { Project } from "@/types/db-types";
 
 import ProjectHeadingContainer from "./project-heading-container";
 import LikesContainer from "./likes-container";
-import ContributorsContainer from "./contributors-container";
+import ContributorsContainer from "./collaborators-container";
 import TagsContainer from "./tags-container";
 
 interface ProjectCardProps {
@@ -26,7 +26,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 			<p className="text-slate-800 leading-8 pb-2">
 				{project.description}
 			</p>
-			<ContributorsContainer contributors={project.contributors} />
+			<ContributorsContainer collaborators={project.collaborators} />
 			<TagsContainer tags={project.tags} />
 		</section>
 	);
