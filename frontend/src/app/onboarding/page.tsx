@@ -19,6 +19,7 @@ import { fetchUserFieldValidation, onboardUser } from "@/lib/api/user";
 import { UniqueUserFields } from "@/types/db-types";
 import { checkIfUsernameExistsOnGitHub } from "@/lib/api/github";
 import { UserOnboard } from "@/lib/api/schemas/userSchemas";
+import { toast } from "@/hooks/use-toast";
 
 export default function OnboardingPage() {
   return (
@@ -142,12 +143,19 @@ export function OnboardingForm() {
         console.log("Onboarding form: user not logged in");
       }
       await onboardUser(onboard_details, token!);
+      toast({
+        title: "Onboarding Complete",
+        description: "Welcome to whoisbuilding!",
+      });
       router.push("/");
       router.refresh();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Onboarding Failed",
+        description: "There was an error onboarding. Please try again.",
+        variant: "destructive",
+      });
     }
-    console.log(values);
   }
 
   return (
