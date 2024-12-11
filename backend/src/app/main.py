@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import users, github
+from .routers import users, github, likes
 from .auth import router as auth_router
 from .database import engine
 from .models import Base
@@ -32,6 +32,7 @@ app.add_middleware(
 app.include_router(users.router, tags=["Users"])
 app.include_router(auth_router, tags=["Auth"])
 app.include_router(github.router, prefix="/api/github", tags=["GitHub"])
+app.include_router(likes.router, tags=["Likes"])
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)

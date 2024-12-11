@@ -39,5 +39,6 @@ class ValidateUserFieldResponse(BaseModel):
     exists: bool
 
 class FilterPageBy(Enum):
+    MOST_LIKED = "most_liked"
     NEW = "newest"
     OLD = "oldest"
