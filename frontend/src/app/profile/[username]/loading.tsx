@@ -4,7 +4,7 @@ import ProjectCardSkeleton from "@/features/project-card/components/project-card
 
 export default function LoadingPage() {
   return (
-    <div className="grid gap-8 grid-cols-12">
+    <div className="grid gap-8 grid-cols-12 mt-8 mb-16">
       <aside className="col-span-3 w-full">
         <section className="w-full flex flex-col gap-4">
             <Skeleton className="w-full aspect-square rounded-lg" />
