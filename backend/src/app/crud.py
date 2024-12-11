@@ -7,9 +7,11 @@ from sqlalchemy import desc, func, and_
 from . import models, schemas, dtos
 from .auth import get_password_hash
 from typing import List
+from app.dtos import UserDisplay
 from app.services import github
 from app.services.s3 import upload_image_to_s3
 
+DEFAULT_USER_LIMIT = 5
 # Create a new user
 def create_user(db: Session, user: schemas.UserCreate):
     print("Creating user")
@@ -94,6 +96,20 @@ def get_user_by_username(db: Session, username: str):
 # Get a user by email
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
+
+## returns substring matches of search text by username; includes limit
+def search_users_by_username(db: Session, search_text: str, limit: int | None):
+    if limit is None: limit = DEFAULT_USER_LIMIT ## handle none case
+
+    case_insensitive_pattern = f"%{search_text}%" ## use ilike to do a case insensitive substring search
+
+    users = db.query(models.User).filter(models.User.username.ilike(case_insensitive_pattern)).limit(limit).all() ## todo add ranking for substring matches
+
+    ## map to user display, if no profile_image_url, then use None
+    user_display = [UserDisplay(username=user.username, profile_image_url=user.profile_image_url or None) for user in users]
+
+    return user_display
+
 
 # Update a user's information
 def update_user(db: Session, user_id: int, user_update: schemas.UserBase):
