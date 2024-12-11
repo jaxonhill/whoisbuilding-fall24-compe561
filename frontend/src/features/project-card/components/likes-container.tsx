@@ -29,7 +29,7 @@ export default function LikesContainer({ liked_by }: LikesContainerProps) {
 					{displayedLikers.map((liker) => {
 						return (
 							<img
-								className="border-2 border-white w-8 h-8 rounded-full mr-[-16px]"
+								className={`border-2 border-white w-8 h-8 rounded-full ${liked_by.length > 1 ? "mr-[-16px]" : ""}`}
 								key={liker.username}
 								src={liker.profile_image_url}
 								alt={`${liker.username}'s profile picture`} 

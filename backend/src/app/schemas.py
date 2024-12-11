@@ -94,12 +94,16 @@ class Like(BaseModel):
     class Config:
         from_attributes = True
 
+class UserDisplay(BaseModel):
+    username: str
+    profile_image_url: str
+
 # Schema for returning a project
 class Project(ProjectBase):
     id: int
     created_at: datetime
-    liked_by: List[Like]
-    collaborators: List[Collaborator]
+    liked_by: List[UserDisplay]
+    collaborators: List[UserDisplay]
     image_url: Optional[str] = None
     
     class Config:

@@ -139,26 +139,33 @@ def create_project(db: Session, project: schemas.ProjectCreate) -> schemas.Proje
     collaborators = []
     liked_by = []
 
-    for collaborator_user_id in project.collaborator_user_ids:
-        # For each collaborator, add them to the project
-        db_collaborator = models.Collaborators(project_id=db_project.id, user_id=collaborator_user_id)
-        db.add(db_collaborator)
-        db.commit()
-        collaborators.append(db_collaborator)
-
-        # Add collaborator as likers of the project
-        db_like = models.Likes(project_id=db_project.id, user_id=collaborator_user_id)
-        db.add(db_like)
-        db.commit()
-        liked_by.append(db_like)
-    
-    # Add the like for the user adding the project
-    db_like = models.Likes(project_id=db_project.id, user_id=db_project.created_by_user_id)
-    db.add(db_like)
-    liked_by.append(db_like)
-
-    # Commit the changes to the database
+    # Add creator as a collaborator first
+    creator_collaborator = models.Collaborators(project_id=db_project.id, user_id=project.created_by_user_id)
+    db.add(creator_collaborator)
     db.commit()
+    collaborators.append(creator_collaborator)
+
+    # Add creator's like
+    creator_like = models.Likes(project_id=db_project.id, user_id=project.created_by_user_id)
+    db.add(creator_like)
+    db.commit()
+    liked_by.append(creator_like)
+
+    # Then add other collaborators
+    for collaborator_user_id in project.collaborator_user_ids:
+        if collaborator_user_id != project.created_by_user_id:  # Skip if it's the creator
+            # Add collaborator
+            db_collaborator = models.Collaborators(project_id=db_project.id, user_id=collaborator_user_id)
+            db.add(db_collaborator)
+            db.commit()
+            collaborators.append(db_collaborator)
+
+            # Add collaborator's like
+            db_like = models.Likes(project_id=db_project.id, user_id=collaborator_user_id)
+            db.add(db_like)
+            db.commit()
+            liked_by.append(db_like)
+
     db.refresh(db_project)
 
     return schemas.Project(
@@ -221,73 +228,80 @@ def get_all_users(db: Session):
 def get_project(db: Session, project_id: int):
     return db.query(models.Project).filter(models.Project.id == project_id).first()
 
-# Get all projects for a specific user
-def get_projects_by_user(db: Session, user_id: int):
-    return db.query(models.Project).filter(models.Project.user_id == user_id).all()
-
-
 def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.FilterPageBy, limit: int, page: int, username: str | None):
     offset = limit * (page-1)
 
-    ## build query by filter type
-
-    ## handle sort by filter
     if sort_by == dtos.FilterPageBy.NEW:
         db_query = db.query(models.Project).order_by(desc(models.Project.created_at))
     elif sort_by == dtos.FilterPageBy.OLD:
         db_query = db.query(models.Project).order_by(models.Project.created_at)
 
-    ## handle user filter
     if username is not None:
-        # Get user_id from username
         user = get_user_by_username(db, username)
-        # Get project_ids where the user is a collaborator
+        if user:
+            # Get projects where user is either creator or collaborator
+            project_ids = db.query(models.Collaborators.project_id)\
+                .filter(models.Collaborators.user_id == user.id)\
+                .union(
+                    db.query(models.Project.id)\
+                    .filter(models.Project.created_by_user_id == user.id)
+                ).subquery()
+            db_query = db_query.filter(models.Project.id.in_(project_ids))
 
-        project_ids = db.query(models.Collaborators.project_id).filter(models.Collaborators.user_id == user.id).subquery()
-        db_query = db_query.filter(models.Project.id.in_(project_ids))
-        
-    ## handle tags
-    if tags is not None: db_query = db_query.filter(models.Project.tags.op('&&')(tags))
-        
+    if tags is not None:
+        db_query = db_query.filter(models.Project.tags.op('&&')(tags))
+
+    # Get projects with related data
     projects = db_query.options(
-        joinedload(models.Project.liked_by),  # Fetch related likes
-        joinedload(models.Project.collaborators)  # Fetch related collaborators
-    ).limit(limit).offset(offset).all() # Fetch related collaboratorsall()
+        joinedload(models.Project.liked_by).joinedload(models.Likes.user),
+        joinedload(models.Project.collaborators).joinedload(models.Collaborators.user),
+        joinedload(models.Project.owner)
+    ).limit(limit).offset(offset).all()
 
-    return projects
-
-    """
-    if user is None:
-        db_projects = db.query(models.Project).order_by(desc(models.Project.created_at)).filter()
-    else:
-        # Get user_id from username
-        user = get_user_by_username(db, username)
-        if not user:
-            return []  # or handle the case where the user is not found
+    # Transform projects into list of dictionaries with correct structure
+    transformed_projects = []
+    for project in projects:
+        # Get creator info
+        creator = {
+            "username": project.owner.username,
+            "profile_image_url": project.owner.profile_image_url
+        }
         
-        # Get user_id from username
-        user = get_user_by_username(db, username)
-        # Get project_ids where the user is a collaborator
-        project_ids = db.query(models.Collaborators.project_id).filter(models.Collaborators.user_id == user.id).subquery()
+        # Get collaborators and ensure creator isn't duplicated
+        collaborators = [
+            {
+                "username": collab.user.username,
+                "profile_image_url": collab.user.profile_image_url
+            }
+            for collab in project.collaborators
+            if collab.user.username != creator["username"]  # Avoid duplicating creator
+        ]
+        
+        # Add creator to start of collaborators list
+        collaborators.insert(0, creator)
 
-        # Build the query based on specifications
-        if sort_by == "new":
-            if tags is None:
-                objs = db.query(models.Project).order_by(desc(models.Project.created_at)).filter(models.Project.id.in_(project_ids)).limit(limit).offset(offset).all()
-            else:
-                objs = db.query(models.Project).order_by(desc(models.Project.created_at)).filter(
-                    and_(
-                        models.Project.tags.op('&&')(tags),
-                        models.Project.id.in_(project_ids)
-                    )
-                ).limit(limit).offset(offset).all()
-        else:
-            objs = db.query(models.Project).order_by(models.Project.title.asc()).filter(
-                models.Project.id.in_(project_ids)
-            ).limit(limit).offset(offset).all()
+        project_dict = {
+            "id": project.id,
+            "title": project.title,
+            "description": project.description,
+            "tags": project.tags,
+            "created_by_user_id": project.created_by_user_id,
+            "github_link": project.github_link,
+            "live_site_link": project.live_site_link,
+            "created_at": project.created_at,
+            "image_url": project.image_url,
+            "liked_by": [
+                {
+                    "username": like.user.username,
+                    "profile_image_url": like.user.profile_image_url
+                }
+                for like in project.liked_by
+            ],
+            "collaborators": collaborators
+        }
+        transformed_projects.append(project_dict)
 
-    return objs
-    """
+    return transformed_projects
 
 # Delete a project by ID
 def delete_project(db: Session, project_id: int):

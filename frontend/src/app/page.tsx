@@ -57,6 +57,8 @@ export default function HomePage() {
     fetchProjects();
   }, [state]);
 
+  console.log(projects);
+
 	return (
     <div className="grid mt-12 mb-16 grid-cols-12 gap-8">
 			<FiltersContainer state={state} dispatch={dispatch} />

@@ -192,15 +192,48 @@ def read_project(project_id: int, db: Session = Depends(get_db)):
     print(db_project.tags)
     if db_project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-    return db_project
+    return schemas.Project(
+        id=db_project.id,
+        title=db_project.title,
+        description=db_project.description,
+        tags=db_project.tags,
+        collaborators=[
+            schemas.UserDisplay(
+                username=collab.user.username,
+                profile_image_url=collab.user.profile_image_url
+            )
+            for collab in db_project.collaborators
+        ],
+        likes=[
+            schemas.UserDisplay(
+                username=like.user.username,
+                profile_image_url=like.user.profile_image_url
+            )
+            for like in db_project.liked_by
+        ],
+        github_link=db_project.github_link,
+        live_site_link=db_project.live_site_link,
+        image_url=db_project.image_url
+    )
 
 @router.get("/projects", response_model=schemas.ProjectPageResponse)
-def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, username: str | None = None, tags: str | None = None, db: Session = Depends(get_db)): ## optional params: https://fastapi.tiangolo.com/tutorial/query-params/#optional-parameters
+def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, username: str | None = None, tags: str | None = None, db: Session = Depends(get_db)):
     if tags is not None: 
         tagsAsArray: Tags = tags.split(",") 
     else: 
         tagsAsArray = None
-    db_projects = crud.get_projects_by_page(db=db, tags=tagsAsArray, username=username, sort_by=sort_by, limit=limit, page=page)
-    serialized_projects = [schemas.Project.model_validate(proj) for proj in db_projects]
-
-    return ProjectPageResponse(projects=serialized_projects, limit=limit, page=page)
+    
+    db_projects = crud.get_projects_by_page(
+        db=db, 
+        tags=tagsAsArray, 
+        username=username, 
+        sort_by=sort_by, 
+        limit=limit, 
+        page=page
+    )
+    
+    return schemas.ProjectPageResponse(
+        projects=db_projects,
+        limit=limit,
+        page=page
+    )
