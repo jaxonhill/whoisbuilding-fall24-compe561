@@ -86,15 +86,19 @@ export function AuthForm({ type }: AuthFormProps) {
             if (user.is_onboarding_complete) {
               // ready to access site
               router.push("/");
+              toast({
+                title: "Login Successful",
+                description: "You are now logged in.",
+              });
             } else {
               // still needs to onboard
               router.push("/onboarding");
+              toast({
+                title: "Login Successful",
+                description: "You are now logged in. Please complete onboarding.",
+              });
             }
           }
-          toast({
-            title: "Login Successful",
-            description: "You are now logged in.",
-          });
           router.refresh();
         } catch (error) {
           if (error instanceof UserLoginError) {
@@ -119,9 +123,12 @@ export function AuthForm({ type }: AuthFormProps) {
         //router.refresh();
       } else {
         await signup(values.email, values.password);
+        toast({
+          title: "Signup Successful",
+          description: "You are now signed up. Please complete onboarding.",
+        });
         router.push("/onboarding");
         router.refresh();
-        console.log("Signup values:", values);
       }
     } catch (error) {
       console.log(`${isLogin ? "Login" : "Signup"} failed: `, error);
