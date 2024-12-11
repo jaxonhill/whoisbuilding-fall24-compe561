@@ -5,7 +5,7 @@ from .. import crud, schemas
 from ..database import get_db
 from app.schemas import ProjectPageResponse, User
 from app import auth
-from app.dtos import Tags, ValidateUserFieldResponse, FilterPageBy
+from app.dtos import Tags, ValidateUserFieldResponse, FilterPageBy, UserDisplayResponse
 from typing import Annotated
 from app.config import limiter
 import json
@@ -87,7 +87,7 @@ def validate_user_field(field: schemas.UniqueUserFields, proposed_value: str, db
     else:
         return ValidateUserFieldResponse(message=f"{field.value} is unique", field=field.value, exists=fieldExists)
         
-@router.get("/users")
+@router.get("/users/all")
 def get_users(db: Session = Depends(get_db)):
     return crud.get_all_users(db=db)
 
@@ -97,6 +97,12 @@ def get_user_by_username(username: str, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
+
+@router.get("/users", response_model=UserDisplayResponse)
+def search_users_by_username(search_text: str, limit: int | None = None, db: Session = Depends(get_db)):
+    matched_users = crud.search_users_by_username(db=db,search_text=search_text, limit=limit)
+    return UserDisplayResponse(matchedUsers=matched_users)
+
 
 # Endpoint to create a new project
 @router.post("/projects", response_model=schemas.Project)
