@@ -3,27 +3,32 @@
 import FiltersContainer from "@/features/filters/components/filters-container";
 import { Option } from "@/types/common-types";
 import { PaginatedProjects, Project } from "@/types/db-types";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useMemo } from "react";
 import { TAGS } from "@/features/filters/components/filters-container";
 import ProjectsContainer from "@/features/project-card/components/projects-container";
 import { getProjects } from "@/lib/api/projects";
 import { SortByOption } from "@/features/filters/components/sort-by";
 import ProjectCardSkeleton from "@/features/project-card/components/project-card-skeleton";
+import { useDebounce } from "@/hooks/use-debounce";
 
 // Define the initial state with explicit types
 const initialState: {
   searchText: string;
   sortBy: SortByOption;
   tags: Option[];
+  username: string | null;
 } = {
   searchText: "",
   sortBy: "newest",
   tags: TAGS.map((tag) => ({...tag, isSelected: false})),
+  username: null,
 };
 
 // Define the reducer function
 function filterReducer(state: typeof initialState, action: { type: string; payload?: any }) {
   switch (action.type) {
+    case 'SET_USERNAME':
+      return { ...state, username: action.payload };
     case 'SET_SEARCH_TEXT':
       return { ...state, searchText: action.payload };
     case 'SET_SORT_BY':
@@ -46,6 +51,9 @@ export default function HomePage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Debounce the search text with a 300ms delay
+  const debouncedSearchText = useDebounce(state.searchText, 300);
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -55,6 +63,8 @@ export default function HomePage() {
           page: 1,
           sort_by: state.sortBy,
           tags: state.tags.filter((tag) => tag.isSelected).map((tag) => tag.label),
+          username: state.username,
+          search: debouncedSearchText,
         });
         setProjects(paginationResponse.projects);
       } finally {
@@ -62,7 +72,7 @@ export default function HomePage() {
       }
     };
     fetchProjects();
-  }, [state]);
+  }, [state.sortBy, state.tags, debouncedSearchText, state.username]);
 
 	return (
     <div className="grid mt-8 mb-16 grid-cols-12 gap-8">
