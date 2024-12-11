@@ -20,6 +20,7 @@ import { UniqueUserFields } from "@/types/db-types";
 import { checkIfUsernameExistsOnGitHub } from "@/lib/api/github";
 import { UserOnboard } from "@/lib/api/schemas/userSchemas";
 import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function OnboardingPage() {
   return (
@@ -112,6 +113,7 @@ const schema = z.object({
 export function OnboardingForm() {
   const router = useRouter();
   const { token, updateUser } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -139,6 +141,7 @@ export function OnboardingForm() {
     };
 
     try {
+      setIsLoading(true);
       if (!token) {
         console.log("Onboarding form: user not logged in");
       }
@@ -156,6 +159,8 @@ export function OnboardingForm() {
         description: "There was an error onboarding. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -294,7 +299,7 @@ export function OnboardingForm() {
         />
 
         <PrimaryButton
-          isLoading={false}
+          isLoading={isLoading}
           disabled={false}
           type="submit"
           className="col-span-4 w-full self-end p-0 items-center bg-blue-700 h-12 hover:bg-blue-600 disabled:bg-slate-300"
