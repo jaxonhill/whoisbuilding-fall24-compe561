@@ -2,19 +2,17 @@ import { UserDisplay } from "@/types/db-types";
 import { Heart } from "lucide-react";
 
 interface LikesContainerProps {
+	onLikeClick: () => void;
+	isLiked: boolean;
 	liked_by: UserDisplay[];
 }
 
-export default function LikesContainer({ liked_by }: LikesContainerProps) {
-	const isLiked: boolean = true;
-	if (liked_by.length === 0) {
-		return null;
-	}
+export default function LikesContainer({ onLikeClick, isLiked, liked_by }: LikesContainerProps) {
 	const displayedLikers = liked_by.slice(0, 3); // Limit to 3 likers
 
 	return (
 		<div className="flex items-center w-full">
-			<button className="group">
+			<button onClick={onLikeClick} className="group">
 				<Heart
 					className={`w-8 h-8 ${isLiked 
 						? "stroke-red-600 fill-red-600 group-hover:stroke-red-500 group-hover:fill-red-500 transition-colors duration-200" 
@@ -22,7 +20,7 @@ export default function LikesContainer({ liked_by }: LikesContainerProps) {
 					`}
 				/>
 			</button>
-			{/* Add onClick to open the likedBy popup */}
+			{/* TODO: Add onClick to open the likedBy popup */}
 			<button className="flex items-center gap-1 text-slate-950 group py-1 px-2">
 				<span className="font-normal text-xl group-hover:underline">{liked_by.length} like{liked_by.length !== 1 ? "s" : ""}</span>
 				<div className="flex pr-4">

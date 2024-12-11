@@ -231,28 +231,44 @@ def get_project(db: Session, project_id: int):
 def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.FilterPageBy, limit: int, page: int, username: str | None):
     offset = limit * (page-1)
 
-    if sort_by == dtos.FilterPageBy.NEW:
-        db_query = db.query(models.Project).order_by(desc(models.Project.created_at))
-    elif sort_by == dtos.FilterPageBy.OLD:
-        db_query = db.query(models.Project).order_by(models.Project.created_at)
+    # Start with a base query
+    base_query = db.query(models.Project)
 
+    if sort_by == dtos.FilterPageBy.MOST_LIKED:
+        # Add a subquery to count likes
+        likes_count = db.query(
+            models.Likes.project_id,
+            func.count(models.Likes.id).label('likes_count')
+        ).group_by(models.Likes.project_id).subquery()
+        
+        # Join with the likes count and order by it
+        base_query = base_query.outerjoin(
+            likes_count, 
+            models.Project.id == likes_count.c.project_id
+        ).order_by(desc(func.coalesce(likes_count.c.likes_count, 0)))
+    elif sort_by == dtos.FilterPageBy.NEW:
+        base_query = base_query.order_by(desc(models.Project.created_at))
+    elif sort_by == dtos.FilterPageBy.OLD:
+        base_query = base_query.order_by(models.Project.created_at)
+
+    # Apply username filter if provided
     if username is not None:
         user = get_user_by_username(db, username)
         if user:
-            # Get projects where user is either creator or collaborator
             project_ids = db.query(models.Collaborators.project_id)\
                 .filter(models.Collaborators.user_id == user.id)\
                 .union(
                     db.query(models.Project.id)\
                     .filter(models.Project.created_by_user_id == user.id)
                 ).subquery()
-            db_query = db_query.filter(models.Project.id.in_(project_ids))
+            base_query = base_query.filter(models.Project.id.in_(project_ids))
 
+    # Apply tags filter if provided
     if tags is not None:
-        db_query = db_query.filter(models.Project.tags.op('&&')(tags))
+        base_query = base_query.filter(models.Project.tags.op('&&')(tags))
 
     # Get projects with related data
-    projects = db_query.options(
+    projects = base_query.options(
         joinedload(models.Project.liked_by).joinedload(models.Likes.user),
         joinedload(models.Project.collaborators).joinedload(models.Collaborators.user),
         joinedload(models.Project.owner)

@@ -9,14 +9,12 @@ import {
 } from "@/components/ui/select";
 
 const sortOptions = [
-  { value: "top-monthly", label: "Top Monthly" },
-  { value: "top-weekly", label: "Top Weekly" },
-  { value: "top-daily", label: "Top Daily" },
+  { value: "most_liked", label: "Most Liked" },
   { value: "newest", label: "Newest" },
   { value: "oldest", label: "Oldest" },
 ] as const;
 
-export type SortByOption = "top-monthly" | "top-weekly" | "top-daily" | "newest" | "oldest";
+export type SortByOption = "most_liked" | "newest" | "oldest";
 
 export default function SortBy({ value, onChange }: { value: SortByOption, onChange: (sortOption: SortByOption) => void }) {
   return (
