@@ -11,12 +11,13 @@ export default async function UserPage({ params }: { params: { username: string 
   const user: User = await getUserByUsername(username);
   const githubData: GitHubContributionsResponse = await getGithubActivityByUsername(username);
   
-  const projects = await getProjects({
+  const paginatedProjects = await getProjects({
     limit: 10,
     page: 1,
     sort_by: "newest",
     username: username,
   });
+  const projects = paginatedProjects.projects;
 
   return (
     <div className="grid gap-8 grid-cols-12">
@@ -33,7 +34,9 @@ export default async function UserPage({ params }: { params: { username: string 
           yearly_contributions={githubData.yearly_contributions!}
           active_repos={githubData.active_repos!}
         />
-        {projects.length > 0 ? <ProjectsContainer projects={projects} /> : <div className="text-center text-slate-500">No projects found</div>}
+        <div className="pt-8 w-full">
+          {projects.length > 0 ? <ProjectsContainer projects={projects} /> : <div className="text-center text-slate-500">No projects found</div>}
+        </div>
       </div>
     </div>
   )

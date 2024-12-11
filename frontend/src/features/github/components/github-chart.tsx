@@ -32,7 +32,6 @@ interface GitHubChartProps {
 }
 
 export default function GitHubChart({
-  gitHubUsername,
   chartData,
   from_date,
   to_date,

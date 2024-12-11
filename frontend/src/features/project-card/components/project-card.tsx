@@ -1,5 +1,6 @@
-import { Project } from "@/types/db-types";
+"use client";
 
+import { Project } from "@/types/db-types";
 import ProjectHeadingContainer from "./project-heading-container";
 import LikesContainer from "./likes-container";
 import ContributorsContainer from "./collaborators-container";
