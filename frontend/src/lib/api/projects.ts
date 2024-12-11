@@ -1,6 +1,7 @@
 import { PaginatedProjects, Project } from "@/types/db-types";
 import { API_BASE_URL } from "./locals";
 import { ProjectFormValues } from "@/app/add/page";
+import { SortByOption } from "@/features/filters/components/sort-by";
 
 export async function createProject(project: ProjectFormValues, token: string) {
     const formData = new FormData();
@@ -33,8 +34,6 @@ export async function createProject(project: ProjectFormValues, token: string) {
 
     return response.json();
 }
-
-type SortByOption = "top_all_time" | "top_monthly" | "top_weekly" | "top_daily" | "newest" | "oldest";
 
 type GetProjectsParams = {
     limit: number;

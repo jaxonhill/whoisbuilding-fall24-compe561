@@ -80,16 +80,23 @@ export function AuthForm({ type }: AuthFormProps) {
       setIsLoading(true);
       if (isLogin) {
         try {
-          const user_void = await login(values.email, values.password);
+          const user = await login(values.email, values.password);
 
-          if (user_void) {
-            const user: User = user_void;
+          if (user) {
             if (user.is_onboarding_complete) {
               // ready to access site
               router.push("/");
+              toast({
+                title: "Login Successful",
+                description: "You are now logged in.",
+              });
             } else {
               // still needs to onboard
               router.push("/onboarding");
+              toast({
+                title: "Login Successful",
+                description: "You are now logged in. Please complete onboarding.",
+              });
             }
           }
           router.refresh();
@@ -113,16 +120,33 @@ export function AuthForm({ type }: AuthFormProps) {
             }
           }
         }
-        //router.refresh();
-      } else {
-        await signup(values.email, values.password);
-        router.push("/onboarding");
-        router.refresh();
-        console.log("Signup values:", values);
+      } 
+      else {
+        try {
+          await signup(values.email, values.password);
+          toast({
+            title: "Signup Successful",
+            description: "You are now signed up. Please complete onboarding.",
+          });
+          router.push("/onboarding");
+          router.refresh();
+        } catch (error) {
+          toast({
+            title: "Signup Failed",
+            description: "There was an error signing up. Please try again.",
+            variant: "destructive",
+          });
+        }
       }
-    } catch (error) {
-      console.log(`${isLogin ? "Login" : "Signup"} failed: `, error);
-    } finally {
+    } 
+    catch (error) {
+      toast({
+        title: "Authentication Failed",
+        description: "There was an error authenticating. Please try again.",
+        variant: "destructive",
+      });
+    } 
+    finally {
       setIsLoading(false);
     }
   }

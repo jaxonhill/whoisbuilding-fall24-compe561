@@ -13,7 +13,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   
 	return (
-		<nav className="sticky top-0 bg-white/90 backdrop-blur-sm h-20 flex justify-between items-center">
+		<nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm h-20 flex justify-between items-center">
 			<Logo />
 			<div className="flex gap-6 items-center">
 				{NAVBAR_LINKS.map((navbar_link) => {

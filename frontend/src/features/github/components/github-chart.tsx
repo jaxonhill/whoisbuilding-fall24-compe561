@@ -19,10 +19,8 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { GitCommitHorizontal, BookMarked, CalendarDays } from "lucide-react";
-import Link from "next/link";
 
 interface GitHubChartProps {
-  gitHubUsername: string;
   chartData: {}[];
   from_date: string;
   to_date: string;
@@ -31,50 +29,55 @@ interface GitHubChartProps {
   active_repos: ActiveRepos[];
 }
 
+function createDateRangeString(from_date: string, to_date: string): string {
+  const fromDate = new Date(from_date);
+  const toDate = new Date(to_date);
+
+  const fromDateString = fromDate.toLocaleDateString("en-US", {
+    month: "long",
+    timeZone: "UTC",
+  });
+
+  const toDateString = toDate.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+  
+  return (
+    `${fromDateString} - ${toDateString}`
+  )
+}
+
+const chartConfig = {
+  contributions: {
+    label: "Contributions",
+    color: "#2563eb",
+  },
+} satisfies ChartConfig;
+
 export default function GitHubChart({
-  gitHubUsername,
   chartData,
   from_date,
   to_date,
   total_contributions_in_date_range,
-  yearly_contributions,
-  active_repos,
 }: GitHubChartProps) {
-  const chartConfig = {
-    contributions: {
-      label: "Contributions",
-      color: "#2563eb",
-    },
-  } satisfies ChartConfig;
-
   return (
-    <Card className="p-2">
-      <div className="p-4">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-2xl">GitHub Contributions</CardTitle>
-          <div className="flex flex-row items-center">
-            <GitCommitHorizontal className="pr-1" />
-            <CardDescription>
-              {total_contributions_in_date_range} contributions
-            </CardDescription>
-          </div>
+    <GithubChartLayout>
+      <div className="flex flex-row justify-between items-start">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl">Last Month's Github Contributions</h1>
+          <p className="text-slate-600">{createDateRangeString(from_date, to_date)}</p>
         </div>
-        <CardDescription>
-          {`${new Date(from_date).toLocaleDateString("en-US", {
-            month: "long",
-            timeZone: "UTC",
-          })}
-        - ${new Date(to_date).toLocaleDateString("en-US", {
-          month: "long",
-          year: "numeric",
-          timeZone: "UTC",
-        })}
-        `}
-        </CardDescription>
+        <div className="flex flex-row items-center gap-2">
+          <GitCommitHorizontal className="w-6 h-6 stroke-slate-800" />
+          <p className="text-slate-800">
+            {total_contributions_in_date_range} monthly contributions
+          </p>
+        </div>
       </div>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-          <BarChart data={chartData}>
+      <ChartContainer config={chartConfig} className="w-full z-0">
+        <BarChart data={chartData}>
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -112,40 +115,16 @@ export default function GitHubChart({
               fill="var(--color-primary)"
               radius={4}
             />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Active Repositories
-        </div>
-        <div className="flex flex-wrap gap-2 leading-none text-muted-foreground">
-          {active_repos.map((repository, index) => (
-            <a
-              key={repository.name}
-              className="flex flex-row"
-              target="_blank"
-              href={repository.link}
-            >
-              <BookMarked className="h-4 w-4" />
-              <span className="pl-1">{`${repository.name}${
-                index < active_repos.length - 1 && ", "
-              }`}</span>
-            </a>
-          ))}
-        </div>
-      </CardFooter>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Year-To-Date Contributions
-        </div>
-        <div className="flex gap-2 leading-none text-muted-foreground items-center">
-          <>
-            <GitCommitHorizontal />
-            {yearly_contributions}
-          </>
-        </div>
-      </CardFooter>
-    </Card>
+        </BarChart>
+      </ChartContainer>
+    </GithubChartLayout>
+  );
+}
+
+export function GithubChartLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="p-8 flex flex-col gap-6 border border-slate-300 rounded-lg">
+      {children}
+    </section>
   );
 }

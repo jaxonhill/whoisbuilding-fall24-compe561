@@ -6,7 +6,7 @@ export type User = {
   last_name: string;
   profile_image_url: string;
   username: string;
-  bio: string;
+  biography: string;
   github_username: string;
   discord: string | null;
   linkedin: string | null;

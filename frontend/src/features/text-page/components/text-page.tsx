@@ -10,7 +10,7 @@ interface TextPageProps {
 
 export function TextPage({ title, description, questions }: TextPageProps) {
     return (
-        <article className="flex flex-col w-full gap-16 pt-16">
+        <article className="flex flex-col w-full gap-16 mt-12 mb-16">
             <div className="flex flex-col gap-4">
                 <h1 className="text-3xl font-medium">{title}</h1>
                 {description && (
