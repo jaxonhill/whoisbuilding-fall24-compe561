@@ -8,6 +8,7 @@ import { TAGS } from "@/features/filters/components/filters-container";
 import ProjectsContainer from "@/features/project-card/components/projects-container";
 import { getProjects } from "@/lib/api/projects";
 import { SortByOption } from "@/features/filters/components/sort-by";
+import ProjectCardSkeleton from "@/features/project-card/components/project-card-skeleton";
 
 // Define the initial state with explicit types
 const initialState: {
@@ -43,27 +44,41 @@ function filterReducer(state: typeof initialState, action: { type: string; paylo
 export default function HomePage() {
 	const [state, dispatch] = useReducer(filterReducer, initialState);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const paginationResponse: PaginatedProjects = await getProjects({
-        limit: 10,
-        page: 1,
-        sort_by: state.sortBy,
-        tags: state.tags.filter((tag) => tag.isSelected).map((tag) => tag.label),
-      });
-      setProjects(paginationResponse.projects);
+      try {
+        setLoading(true);
+        const paginationResponse: PaginatedProjects = await getProjects({
+          limit: 10,
+          page: 1,
+          sort_by: state.sortBy,
+          tags: state.tags.filter((tag) => tag.isSelected).map((tag) => tag.label),
+        });
+        setProjects(paginationResponse.projects);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProjects();
   }, [state]);
-
-  console.log(projects);
 
 	return (
     <div className="grid mt-8 mb-16 grid-cols-12 gap-8">
 			<FiltersContainer state={state} dispatch={dispatch} />
       <div className="col-span-8">
-        {projects.length > 0 ? <ProjectsContainer projects={projects} /> : <div className="text-center text-slate-500">No projects found</div>}
+        {loading ? (
+          <div className="flex flex-col gap-6 w-full">
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+          </div>
+        ) : projects.length > 0 ? (
+          <ProjectsContainer projects={projects} />
+        ) : (
+          <div className="text-center text-slate-500">No projects found</div>
+        )}
       </div>
 		</div>
 	);
