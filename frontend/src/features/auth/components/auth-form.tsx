@@ -120,19 +120,33 @@ export function AuthForm({ type }: AuthFormProps) {
             }
           }
         }
-        //router.refresh();
-      } else {
-        await signup(values.email, values.password);
-        toast({
-          title: "Signup Successful",
-          description: "You are now signed up. Please complete onboarding.",
-        });
-        router.push("/onboarding");
-        router.refresh();
+      } 
+      else {
+        try {
+          await signup(values.email, values.password);
+          toast({
+            title: "Signup Successful",
+            description: "You are now signed up. Please complete onboarding.",
+          });
+          router.push("/onboarding");
+          router.refresh();
+        } catch (error) {
+          toast({
+            title: "Signup Failed",
+            description: "There was an error signing up. Please try again.",
+            variant: "destructive",
+          });
+        }
       }
-    } catch (error) {
-      console.log(`${isLogin ? "Login" : "Signup"} failed: `, error);
-    } finally {
+    } 
+    catch (error) {
+      toast({
+        title: "Authentication Failed",
+        description: "There was an error authenticating. Please try again.",
+        variant: "destructive",
+      });
+    } 
+    finally {
       setIsLoading(false);
     }
   }
