@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "./locals";
 
-export async function likeProject(projectId: number, userId: number) {
+export async function likeProject(projectId: number, userId: number) {    
     const token = localStorage.getItem("token");
     if (!token) {
         throw new Error("No authentication token found");
