@@ -223,7 +223,7 @@ def read_project(project_id: int, db: Session = Depends(get_db)):
     )
 
 @router.get("/projects", response_model=schemas.ProjectPageResponse)
-def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, username: str | None = None, tags: str | None = None, db: Session = Depends(get_db)):
+def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, username: str | None = None, tags: str | None = None, project_name: str | None = None, db: Session = Depends(get_db)):
     if tags is not None: 
         tagsAsArray: Tags = tags.split(",") 
     else: 
