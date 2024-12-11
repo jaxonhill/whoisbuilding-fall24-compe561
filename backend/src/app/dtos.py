@@ -38,6 +38,13 @@ class ValidateUserFieldResponse(BaseModel):
     field: UniqueUserFields
     exists: bool
 
+class UserDisplay(BaseModel):
+    profile_image_url: str | None = None
+    username: str
+
+class UserDisplayResponse(BaseModel):
+    matchedUsers: List[UserDisplay]
+
 class FilterPageBy(Enum):
     MOST_LIKED = "most_liked"
     NEW = "newest"
