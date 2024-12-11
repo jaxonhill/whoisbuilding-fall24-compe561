@@ -244,7 +244,7 @@ def get_all_users(db: Session):
 def get_project(db: Session, project_id: int):
     return db.query(models.Project).filter(models.Project.id == project_id).first()
 
-def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.FilterPageBy, limit: int, page: int, username: str | None):
+def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.FilterPageBy, limit: int, page: int, username: str | None, project_name: str | None):
     offset = limit * (page-1)
 
     # Start with a base query
@@ -279,6 +279,10 @@ def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.Filt
                 ).subquery()
             base_query = base_query.filter(models.Project.id.in_(project_ids))
 
+    if project_name is not None: 
+        case_insensitive_pattern = f"{project_name}"
+        base_query = base_query.filter(models.Project.title.ilike(case_insensitive_pattern))
+    
     # Apply tags filter if provided
     if tags is not None:
         base_query = base_query.filter(models.Project.tags.op('&&')(tags))
