@@ -76,7 +76,7 @@ export default function GitHubChart({
           </p>
         </div>
       </div>
-      <ChartContainer config={chartConfig} className="w-full">
+      <ChartContainer config={chartConfig} className="w-full z-0">
         <BarChart data={chartData}>
             <XAxis
               dataKey="date"
