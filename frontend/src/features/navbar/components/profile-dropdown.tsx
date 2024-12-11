@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User } from "@/types/db-types";
-import { create_profile_page_link } from "@/utils/utils";
 import { Settings, UserRound, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -24,16 +23,19 @@ export default function ProfileDropdown({
     <div className="relative">
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <a
-            href={create_profile_page_link(user.username)}
+          <div
             className="rounded-full w-8 h-8 hover:opacity-95"
           >
-            <img
-              className="rounded-full w-8 h-8"
-              src={user.profile_image_url}
-              alt={`${user.username}'s avatar`}
-            />
-          </a>
+            {user.profile_image_url ? (
+              <img
+                className="rounded-full w-8 h-8"
+                src={user.profile_image_url}
+                alt={`${user.username}'s avatar`}
+              />
+            ) : (
+              <div className="rounded-full w-8 h-8 bg-slate-200" />
+            )}
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="absolute right-[-16px] top-3">
           <DropdownMenuItem

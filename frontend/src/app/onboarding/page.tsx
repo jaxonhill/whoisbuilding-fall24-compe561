@@ -111,7 +111,7 @@ const schema = z.object({
 
 export function OnboardingForm() {
   const router = useRouter();
-  const { token } = useAuth();
+  const { token, updateUser } = useAuth();
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -142,7 +142,8 @@ export function OnboardingForm() {
       if (!token) {
         console.log("Onboarding form: user not logged in");
       }
-      await onboardUser(onboard_details, token!);
+      const updatedUser = await onboardUser(onboard_details, token!);
+      updateUser(updatedUser);
       toast({
         title: "Onboarding Complete",
         description: "Welcome to whoisbuilding!",

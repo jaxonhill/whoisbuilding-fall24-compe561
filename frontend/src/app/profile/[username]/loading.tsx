@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import GithubSkeleton from "@/features/github/components/github-skeleton";
 import ProjectCardSkeleton from "@/features/project-card/components/project-card-skeleton";
 
-export default function LoadingPage() {
+export default async function LoadingPage() {
   return (
     <div className="grid gap-8 grid-cols-12 mt-8 mb-16">
       <aside className="col-span-3 w-full">
