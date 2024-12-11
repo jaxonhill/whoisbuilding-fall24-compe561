@@ -2,7 +2,6 @@ import Discord from "@/components/discord-icon";
 import { User } from "@/types/db-types";
 import EditProfileButton from "./edit-profile-button";
 import { Github, Linkedin, SquarePen } from "lucide-react";
-import { PLACEHOLDER_AVATAR_URL } from "../navbar/components/profile-dropdown";
 
 interface ProfileInfoCardProps {
     user: User;
@@ -25,7 +24,7 @@ export default async function ProfileInfoCard({ user }: ProfileInfoCardProps) {
                 </h3>
             </div>
             <p className="leading-loose text-slate-600">
-                {user.bio}
+                {user.biography}
             </p>
             <div className="flex flex-col gap-2">
                 <SocialLinkContainer
