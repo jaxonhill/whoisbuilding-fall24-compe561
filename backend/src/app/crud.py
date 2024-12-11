@@ -265,8 +265,9 @@ def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.Filt
 
     # Apply tags filter if provided
     if tags is not None:
-        base_query = base_query.filter(models.Project.tags.op('&&')(tags))
-
+         base_query = base_query.filter(
+        models.Project.tags.op('&&')([tag.lower() for tag in tags])
+         )
     # Get projects with related data
     projects = base_query.options(
         joinedload(models.Project.liked_by).joinedload(models.Likes.user),
