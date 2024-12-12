@@ -51,7 +51,9 @@ function AddProjectForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [possibleCollaborators, setPossibleCollaborators] = useState<UserDisplay[]>([]);
+  const [possibleCollaborators, setPossibleCollaborators] = useState<
+    UserDisplay[]
+  >([]);
   const [isSearching, setIsSearching] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -99,7 +101,7 @@ function AddProjectForm() {
   async function onSubmit(values: ProjectFormValues) {
     setIsLoading(true);
     try {
-      const response = await createProject(values, token!); 
+      const response = await createProject(values, token!);
       toast({
         title: "Success",
         description: "Project created successfully!",
@@ -118,22 +120,27 @@ function AddProjectForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-8 pb-16">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full flex flex-col gap-8 pb-16"
+      >
         <FormField
           control={form.control}
           name="image"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel className="font-medium text-base text-slate-950">Add Image</FormLabel>
+              <FormLabel className="font-medium text-base text-slate-950">
+                Add Image
+              </FormLabel>
               <div className="flex flex-col gap-4">
                 <FormControl>
-                  <Input 
-                    type="file" 
+                  <Input
+                    type="file"
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       field.onChange(file);
-                      
+
                       // Create preview URL for the image
                       if (file) {
                         const url = URL.createObjectURL(file);
@@ -179,9 +186,15 @@ function AddProjectForm() {
           name="title"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel className="font-medium text-base text-slate-950">Project Name *</FormLabel>
+              <FormLabel className="font-medium text-base text-slate-950">
+                Project Name *
+              </FormLabel>
               <FormControl>
-                <Input placeholder="Enter project name" type="text" {...field} />
+                <Input
+                  placeholder="Enter project name"
+                  type="text"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -193,12 +206,14 @@ function AddProjectForm() {
           name="description"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel className="font-medium text-base text-slate-950">Project Description *</FormLabel>
+              <FormLabel className="font-medium text-base text-slate-950">
+                Project Description *
+              </FormLabel>
               <FormControl>
-                <Textarea 
-                  placeholder="Explain what the project is about, the purpose behind it, how long you&apos;ve been working on it, anything you want!" 
+                <Textarea
+                  placeholder="Explain what the project is about, the purpose behind it, how long you've been working on it, anything you want!"
                   className="h-48 p-4"
-                  {...field} 
+                  {...field}
                 />
               </FormControl>
               <FormMessage />
@@ -212,9 +227,15 @@ function AddProjectForm() {
             name="github_link"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="font-medium text-base text-slate-950">Github URL</FormLabel>
+                <FormLabel className="font-medium text-base text-slate-950">
+                  Github URL
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter the GitHub URL of the project" type="url" {...field} />
+                  <Input
+                    placeholder="Enter the GitHub URL of the project"
+                    type="url"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -226,9 +247,15 @@ function AddProjectForm() {
             name="live_site_link"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="font-medium text-base text-slate-950">Live Site URL</FormLabel>
+                <FormLabel className="font-medium text-base text-slate-950">
+                  Live Site URL
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter the URL of the live site" type="url" {...field} />
+                  <Input
+                    placeholder="Enter the URL of the live site"
+                    type="url"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -242,12 +269,14 @@ function AddProjectForm() {
             name="collaborators"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="font-medium text-base text-slate-950">Add Collaborator</FormLabel>
+                <FormLabel className="font-medium text-base text-slate-950">
+                  Add Collaborator
+                </FormLabel>
                 <div className="flex flex-col gap-4">
                   <div className="relative w-full">
                     <div className="flex gap-2 items-center border border-slate-300 rounded-lg px-4 h-12 w-full">
-                      <Input 
-                        placeholder="Search collaborator by username" 
+                      <Input
+                        placeholder="Search collaborator by username"
                         type="text"
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => {
@@ -262,7 +291,9 @@ function AddProjectForm() {
                     {isSearchFocused && (
                       <div className="absolute top-full left-0 w-full mt-2 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-50">
                         {isSearching ? (
-                          <div className="px-4 py-2 text-sm text-slate-500">Loading...</div>
+                          <div className="px-4 py-2 text-sm text-slate-500">
+                            Loading...
+                          </div>
                         ) : possibleCollaborators.length > 0 ? (
                           <div className="px-2">
                             {possibleCollaborators.map((user) => (
@@ -270,7 +301,10 @@ function AddProjectForm() {
                                 key={user.username}
                                 onClick={() => {
                                   if (!field.value?.includes(user.username)) {
-                                    field.onChange([...field.value ?? [], user.username]);
+                                    field.onChange([
+                                      ...(field.value ?? []),
+                                      user.username,
+                                    ]);
                                   }
                                   setSearchText("");
                                   setPossibleCollaborators([]);
@@ -278,18 +312,22 @@ function AddProjectForm() {
                                 className="w-full text-left px-2 py-2 hover:bg-slate-50 rounded-md"
                               >
                                 <div className="flex items-center gap-2">
-                                  <img 
-                                    src={user.profile_image_url} 
+                                  <img
+                                    src={user.profile_image_url}
                                     alt={`${user.username}'s avatar`}
                                     className="w-6 h-6 rounded-full"
                                   />
-                                  <span className="text-sm text-slate-500">@{user.username}</span>
+                                  <span className="text-sm text-slate-500">
+                                    @{user.username}
+                                  </span>
                                 </div>
                               </button>
                             ))}
                           </div>
                         ) : searchText ? (
-                          <div className="px-4 py-2 text-sm text-slate-500">No users found</div>
+                          <div className="px-4 py-2 text-sm text-slate-500">
+                            No users found
+                          </div>
                         ) : (
                           <div className="px-4 py-2 text-sm text-slate-500">
                             Start typing to search...
@@ -309,7 +347,9 @@ function AddProjectForm() {
                         <button
                           type="button"
                           onClick={() => {
-                            field.onChange(field.value?.filter((_, i) => i !== index));
+                            field.onChange(
+                              field.value?.filter((_, i) => i !== index)
+                            );
                           }}
                           className="text-slate-500 hover:text-slate-700"
                         >
@@ -329,20 +369,25 @@ function AddProjectForm() {
             name="tags"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="font-medium text-base text-slate-950">Add Tags</FormLabel>
+                <FormLabel className="font-medium text-base text-slate-950">
+                  Add Tags
+                </FormLabel>
                 <div className="flex flex-col gap-4">
                   <div className="flex gap-2">
                     <FormControl>
-                      <Input 
+                      <Input
                         placeholder="Enter tag"
                         type="text"
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             e.preventDefault();
                             const input = e.target as HTMLInputElement;
                             if (input.value.trim()) {
-                              field.onChange([...field.value ?? [], input.value.trim()]);
-                              input.value = '';
+                              field.onChange([
+                                ...(field.value ?? []),
+                                input.value.trim(),
+                              ]);
+                              input.value = "";
                             }
                           }
                         }}
@@ -351,10 +396,16 @@ function AddProjectForm() {
                     <Button
                       type="button"
                       onClick={(e) => {
-                        const input = e.currentTarget.previousElementSibling?.querySelector('input');
+                        const input =
+                          e.currentTarget.previousElementSibling?.querySelector(
+                            "input"
+                          );
                         if (input?.value.trim()) {
-                          field.onChange([...field.value ?? [], input.value.trim()]);
-                          input.value = '';
+                          field.onChange([
+                            ...(field.value ?? []),
+                            input.value.trim(),
+                          ]);
+                          input.value = "";
                         }
                       }}
                       className="bg-blue-700 h-12 hover:bg-blue-600"
@@ -372,7 +423,9 @@ function AddProjectForm() {
                         <button
                           type="button"
                           onClick={() => {
-                            field.onChange(field.value?.filter((_, i) => i !== index));
+                            field.onChange(
+                              field.value?.filter((_, i) => i !== index)
+                            );
                           }}
                           className="text-slate-500 hover:text-slate-700"
                         >
@@ -394,7 +447,9 @@ function AddProjectForm() {
           isLoading={isLoading}
           className="w-full self-end p-0 items-center h-12 disabled:bg-slate-300"
         >
-          <span className="text-white font-medium flex-shrink-0 text-base">Create project</span>
+          <span className="text-white font-medium flex-shrink-0 text-base">
+            Create project
+          </span>
         </PrimaryButton>
       </form>
     </Form>
