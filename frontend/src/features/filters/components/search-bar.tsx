@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { UserDisplay } from "@/types/db-types";
@@ -47,8 +47,15 @@ export default function SearchBar({ value, onChange }: { value: string, onChange
 		setIsFocused(false);
 	};
 
+	const handleDelete = () => {
+		onChange("");
+		setSearchText("");
+		setPossibleUsers([]);
+		setIsFocused(false);
+	};
+
 	return (
-		<div className="relative w-full">
+		<div className="relative w-full space-y-2">
 			<div className={cn(
 				"flex gap-2 items-center border border-slate-300 rounded-lg px-4 h-12 w-full",
 				isFocused && "ring-2 ring-slate-200"
@@ -67,9 +74,22 @@ export default function SearchBar({ value, onChange }: { value: string, onChange
 				/>
 			</div>
 
+			{/* Selected User Tag */}
+			{(value && value.length > 0) && (
+				<div className="flex items-center gap-2 bg-slate-100 w-fit px-3 py-1.5 rounded-full">
+					<span className="text-sm text-slate-700">@{value}</span>
+					<button
+						onClick={handleDelete}
+						className="hover:bg-slate-200 rounded-full p-1"
+					>
+						<X className="h-4 w-4 stroke-slate-500" />
+					</button>
+				</div>
+			)}
+
 			{/* Dropdown Menu */}
 			{isFocused && (
-				<div className="absolute top-full left-0 w-full mt-2 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-50">
+				<div className="absolute top-[48px] left-0 w-full mt-2 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-50">
 					{loading ? (
 						<div className="px-4 py-2 text-sm text-slate-500">Loading...</div>
 					) : possibleUsers.length > 0 ? (
