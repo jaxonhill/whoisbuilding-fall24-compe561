@@ -5,7 +5,7 @@ from .. import crud, schemas
 from ..database import get_db
 from app.schemas import ProjectPageResponse, User
 from app import auth
-from app.dtos import Tags, ValidateUserFieldResponse, FilterPageBy, UserDisplayResponse
+from app.dtos import Tags, ValidateUserFieldResponse, FilterPageBy, UserDisplay
 from typing import Annotated
 from app.config import limiter
 import json
@@ -98,10 +98,10 @@ def get_user_by_username(username: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
-@router.get("/users", response_model=UserDisplayResponse)
+@router.get("/users")
 def search_users_by_username(search_text: str, limit: int | None = None, db: Session = Depends(get_db)):
     matched_users = crud.search_users_by_username(db=db,search_text=search_text, limit=limit)
-    return UserDisplayResponse(matchedUsers=matched_users)
+    return matched_users
 
 
 # Endpoint to create a new project
@@ -223,7 +223,7 @@ def read_project(project_id: int, db: Session = Depends(get_db)):
     )
 
 @router.get("/projects", response_model=schemas.ProjectPageResponse)
-def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, username: str | None = None, tags: str | None = None, db: Session = Depends(get_db)):
+def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, username: str | None = None, tags: str | None = None, project_name: str | None = None, db: Session = Depends(get_db)):
     if tags is not None: 
         tagsAsArray: Tags = tags.split(",") 
     else: 
