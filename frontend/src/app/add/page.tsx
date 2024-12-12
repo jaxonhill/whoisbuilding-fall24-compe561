@@ -106,7 +106,6 @@ function AddProjectForm() {
         title: "Success",
         description: "Project created successfully!",
       });
-      router.push("/");
     } catch (error) {
       toast({
         title: "Error",
@@ -228,7 +227,7 @@ function AddProjectForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="font-medium text-base text-slate-950">
-                  Github URL
+                  Github URL *
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -248,7 +247,7 @@ function AddProjectForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="font-medium text-base text-slate-950">
-                  Live Site URL
+                  Live Site URL *
                 </FormLabel>
                 <FormControl>
                   <Input

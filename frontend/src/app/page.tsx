@@ -18,12 +18,12 @@ const initialState: {
   searchText: string;
   sortBy: SortByOption;
   tags: Option[];
-  username: string | null;
+  username: string;
 } = {
   searchText: "",
   sortBy: "newest",
   tags: TAGS.map((tag) => ({...tag, isSelected: false})),
-  username: null,
+  username: "",
 };
 
 // Define the reducer function

@@ -24,6 +24,8 @@ export async function createProject(project: ProjectFormValues, token: string) {
         formData.append("tags", JSON.stringify(project.tags));
     }
 
+    console.log(formData);
+
     const response = await fetch(`${API_BASE_URL}/projects`, {
         method: "POST",
         body: formData,

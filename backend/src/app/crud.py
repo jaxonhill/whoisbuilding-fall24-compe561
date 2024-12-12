@@ -175,7 +175,6 @@ def create_project(db: Session, project: schemas.ProjectCreate) -> schemas.Proje
             db.add(db_collaborator)
             db.commit()
             collaborators.append(db_collaborator)
-
             # Add collaborator's like
             db_like = models.Likes(project_id=db_project.id, user_id=collaborator_user_id)
             db.add(db_like)
