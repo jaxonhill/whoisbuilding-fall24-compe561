@@ -11,6 +11,7 @@ import { SortByOption } from "@/features/filters/components/sort-by";
 import ProjectCardSkeleton from "@/features/project-card/components/project-card-skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { PrimaryButton } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 // Define the initial state with explicit types
 const initialState: {
@@ -74,9 +75,13 @@ export default function HomePage() {
       } else {
         setProjects(paginationResponse.projects);
       }
-
-      // Check if we have more projects to load
       setHasMore(paginationResponse.projects.length === 3);
+    } catch (error) {
+      toast({
+        title: "Failed to load projects",
+        description: "Please try again later",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

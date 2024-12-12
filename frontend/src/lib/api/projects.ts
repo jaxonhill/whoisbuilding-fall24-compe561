@@ -47,7 +47,7 @@ interface GetProjectsParams {
 export async function getProjects({limit, page, sort_by, tags, username, search}: GetProjectsParams): Promise<PaginatedProjects> {
     // TODO: Add short delay to simulate loading
     // await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     const url = new URL(`${API_BASE_URL}/projects?limit=${limit}&page=${page}&sort_by=${sort_by}`);
     if (tags && tags.length > 0) {
         url.searchParams.set("tags", tags.join(","));
@@ -55,9 +55,9 @@ export async function getProjects({limit, page, sort_by, tags, username, search}
     if (username) {
         url.searchParams.set("username", username);
     }
-    // if (search) {
-    //     url.searchParams.set("search", search);
-    // }
+    if (search && search.length > 0) {
+        url.searchParams.set("project_name", search);
+    }
     const response = await fetch(url.toString());
     return response.json() as Promise<PaginatedProjects>;
 }
