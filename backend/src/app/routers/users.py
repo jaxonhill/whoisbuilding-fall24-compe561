@@ -122,6 +122,19 @@ async def create_project(
         collaborators_list: list[str] = json.loads(collaborators) if collaborators else []
         tags_list: list[str] = json.loads(tags)
 
+        # Get user ids for collaborators with error handling
+        collaborators_user_ids = []
+        for collaborator in collaborators_list:
+            user = crud.get_user_by_username(db, collaborator)
+            if not user:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Collaborator not found: {collaborator}"
+                )
+            # Don't add creator as collaborator twice
+            if user.id != current_user.id:
+                collaborators_user_ids.append(user.id)
+
         # Process the file and other data
         image_url: str | None = None
         if image and image.file:
@@ -130,7 +143,6 @@ async def create_project(
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
-        print("Making project data")
         project_data = schemas.ProjectCreate(
             title=title,
             description=description,
@@ -139,21 +151,19 @@ async def create_project(
             github_link=github_link,
             live_site_link=live_site_link,
             image_url=image_url,
-            collaborator_user_ids=collaborators_list,
+            collaborator_user_ids=collaborators_user_ids,
         )
-        print("About to create project")
-        # Error happened here right below
-        response = crud.create_project(db=db, project=project_data)
-        print("Created project")
 
+        response = crud.create_project(db=db, project=project_data)
+        
         if response is None:
             raise HTTPException(status_code=400, detail="Failed to create project")
         return response
-        
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Invalid JSON format for collaborators or tags")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.put("/projects", response_model=schemas.Project)
 def update_project(project_update: schemas.ProjectBase, 
