@@ -15,6 +15,7 @@ export const TAGS: Option[] = [
 
 interface FiltersContainerProps {
 	state: {
+		username: string;
 		searchText: string;
 		sortBy: SortByOption;
 		tags: Option[];
@@ -26,8 +27,8 @@ export default function FiltersContainer({ state, dispatch }: FiltersContainerPr
 	return (
 		<aside className="sticky top-28 flex flex-col gap-8 w-full col-span-4 h-fit">
 			<SearchBarSection
-				value={state.searchText}
-				onChange={(text) => dispatch({ type: 'SET_SEARCH_TEXT', payload: text })}
+				value={state.username}
+				onChange={(text) => dispatch({ type: 'SET_USERNAME', payload: text })}
 			/>
 			<SortBySection
 				value={state.sortBy}
