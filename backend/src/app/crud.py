@@ -103,7 +103,7 @@ def search_users_by_username(db: Session, search_text: str, limit: int | None):
 
     case_insensitive_pattern = f"%{search_text}%" ## use ilike to do a case insensitive substring search
 
-    users = db.query(models.User).filter(models.User.username.ilike(case_insensitive_pattern)).limit(limit).all() ## todo add ranking for substring matches
+    users = db.query(models.User).filter(models.User.username.ilike(case_insensitive_pattern) & (models.User.is_onboarding_complete == True)).limit(limit).all() ## todo add ranking for substring matches
 
     ## map to user display, if no profile_image_url, then use None
     user_display = [UserDisplay(username=user.username, profile_image_url=user.profile_image_url or None) for user in users]
@@ -198,6 +198,67 @@ def create_project(db: Session, project: schemas.ProjectCreate) -> schemas.Proje
         image_url=db_project.image_url
     )
 
+# Create a new project
+def create_project_2(db: Session, project: schemas.ProjectCreate) -> schemas.Project | None:
+    # Create the project
+    db_project = models.Project(
+        title=project.title,
+        description=project.description,
+        github_link=project.github_link,
+        live_site_link=project.live_site_link,
+        image_url=project.image_url,
+        tags=project.tags,
+        created_by_user_id=project.created_by_user_id,
+    )
+    db.add(db_project)
+    db.commit()
+
+    collaborators = []
+    liked_by = []
+
+    # Add creator as a collaborator first
+    creator_collaborator = models.Collaborators(project_id=db_project.id, user_id=project.created_by_user_id)
+    db.add(creator_collaborator)
+    db.commit()
+    collaborators.append(creator_collaborator)
+
+    # Add creator's like
+    creator_like = models.Likes(project_id=db_project.id, user_id=project.created_by_user_id)
+    db.add(creator_like)
+    db.commit()
+    liked_by.append(creator_like)
+
+    # Then add other collaborators
+    for collaborator_user_id in project.collaborator_user_ids:
+        if collaborator_user_id != project.created_by_user_id:  # Skip if it's the creator
+            # Add collaborator
+            db_collaborator = models.Collaborators(project_id=db_project.id, user_id=collaborator_user_id)
+            db.add(db_collaborator)
+            db.commit()
+            collaborators.append(db_collaborator)
+
+            # Add collaborator's like
+            db_like = models.Likes(project_id=db_project.id, user_id=collaborator_user_id)
+            db.add(db_like)
+            db.commit()
+            liked_by.append(db_like)
+
+    db.refresh(db_project)
+
+    return schemas.Project(
+        id=db_project.id,
+        title=db_project.title,
+        description=db_project.description,
+        tags=db_project.tags,
+        created_by_user_id=db_project.created_by_user_id,
+        created_at=db_project.created_at,
+        collaborators=collaborators,
+        liked_by=liked_by,
+        github_link=db_project.github_link,
+        live_site_link=db_project.live_site_link,
+        image_url=db_project.image_url
+    )
+
 def update_project(db: Session, project_update: schemas.ProjectBase, project_id: int):
     db_project = db.query(models.Project).filter(models.Project.id == project_id).first()
 
@@ -224,6 +285,11 @@ def update_project(db: Session, project_update: schemas.ProjectBase, project_id:
 # Get a user by ID
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
+
+def get_user_id_from_username(db: Session, username: str):
+    user = db.query(models.User).filter(models.User.username == username).first()
+
+    return user.id
 
 ## get list of users in search by partial or full username string
 def get_users_by_username(db: Session, username_string: str):
