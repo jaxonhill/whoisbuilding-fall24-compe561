@@ -25,8 +25,9 @@ Install [Hatch](https://hatch.pypa.io/latest/) to your local machine
 
 #### Run FastAPI Server
 
-1. `hatch run uv sync` - creates venv and synces dependencies from `pyproject.toml`
-2. `hatch run fastapi dev ./src/app/main.py` - start dev server (use run for production)
+1. `cd backend`
+2. `hatch run uv sync` - creates venv and synces dependencies from `pyproject.toml`
+3. `hatch run fastapi dev ./src/app/main.py` - start dev server (use run for production)
 
 - When adding new dependencies use `hatch run uv add "dependency_name"` - add a new dependency (hatch uv version of pip install)
 

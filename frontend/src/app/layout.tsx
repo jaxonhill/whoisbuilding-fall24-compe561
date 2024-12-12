@@ -5,12 +5,18 @@ import { AuthProvider, useAuth } from "@/features/auth/context/auth-context";
 import { Toaster } from "@/components/ui/toaster";
 import { Toast } from "@radix-ui/react-toast";
 import { AuthGuard } from "@/features/auth/components/auth-guard";
+import { Metadata } from "next";
 
 const inter = Inter({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
+export const metadata: Metadata = {
+  title: "WhoIsBuilding",
+  description: "Who Is Building?",
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
