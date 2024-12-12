@@ -122,6 +122,9 @@ async def create_project(
         collaborators_list: list[str] = json.loads(collaborators) if collaborators else []
         tags_list: list[str] = json.loads(tags)
 
+        # Get user ids for collaborators
+        collaborators_user_ids = [get_user_by_username(collaborator, db).id for collaborator in collaborators_list]
+
         # Process the file and other data
         image_url: str | None = None
         if image and image.file:
@@ -130,7 +133,6 @@ async def create_project(
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
-        print("Making project data")
         project_data = schemas.ProjectCreate(
             title=title,
             description=description,
@@ -139,12 +141,10 @@ async def create_project(
             github_link=github_link,
             live_site_link=live_site_link,
             image_url=image_url,
-            collaborator_user_ids=collaborators_list,
+            collaborator_user_ids=collaborators_user_ids,
         )
-        print("About to create project")
         # Error happened here right below
         response = crud.create_project(db=db, project=project_data)
-        print("Created project")
 
         if response is None:
             raise HTTPException(status_code=400, detail="Failed to create project")
@@ -224,9 +224,6 @@ def read_project(project_id: int, db: Session = Depends(get_db)):
 
 @router.get("/projects", response_model=schemas.ProjectPageResponse)
 def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, username: str | None = None, tags: str | None = None, project_name: str | None = None, db: Session = Depends(get_db)):
-    print("Username: ", username)
-    print("Tags: ", tags)
-    print("Project name: ", project_name)
     if tags is not None: 
         tagsAsArray: Tags = tags.split(",") 
     else: 

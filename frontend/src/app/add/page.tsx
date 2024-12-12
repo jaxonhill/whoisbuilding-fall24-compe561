@@ -106,7 +106,6 @@ function AddProjectForm() {
         title: "Success",
         description: "Project created successfully!",
       });
-      router.push("/");
     } catch (error) {
       toast({
         title: "Error",
