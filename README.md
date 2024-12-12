@@ -79,5 +79,6 @@ If the token contains foobar, the content of the Authorization header would be: 
 ## Run the Application - Frontend
 
 1. Navigate to the frontend directory -> `cd frontend`
-2. Run the development server -> `npm run dev`
-3. Use a browser to view the homepage -> `http://localhost:3000`
+2. Run `npm install --legacy-peer-deps`
+3. Run the development server -> `npm run dev`
+4. Use a browser to view the homepage -> `http://localhost:3000`
