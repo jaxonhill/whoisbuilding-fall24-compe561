@@ -107,20 +107,29 @@ def search_users_by_username(search_text: str, limit: int | None = None, db: Ses
 # Endpoint to create a new project
 @router.post("/projects", response_model=schemas.Project)
 async def create_project(
+    tags: list[str],
+    collaborators: list[str],
     current_user: Annotated[User, Depends(auth.get_current_active_user)],
     title: str = Form(...),
     description: str = Form(...),
     github_link: str | None = Form(None),
     live_site_link: str | None = Form(None),
     image: UploadFile | None = File(None),
-    collaborators: str | None = Form(None),
-    tags: str = Form(...),
     db: Session = Depends(get_db)
 ):
     try:
         # Convert JSON strings back to lists
-        collaborators_list: list[str] = json.loads(collaborators) if collaborators else []
-        tags_list: list[str] = json.loads(tags)
+        ##collaborators_list: list[str] = json.loads(collaborators) if collaborators else []
+        ##tags_list: list[str] = json.loads(tags)
+
+
+        collaborator_ids : list[int] = []
+        for collaborator in collaborators:
+            user_id = crud.get_user_id_from_username(db=db, username=collaborator)
+            collaborator_ids.append(user_id)
+
+            ##print("user" + user_id)
+
 
         # Process the file and other data
         image_url: str | None = None
@@ -134,17 +143,17 @@ async def create_project(
         project_data = schemas.ProjectCreate(
             title=title,
             description=description,
-            tags=tags_list,
+            tags=tags,
             created_by_user_id=current_user.id,
             github_link=github_link,
             live_site_link=live_site_link,
             image_url=image_url,
-            collaborator_user_ids=collaborators_list,
+            collaborator_user_ids=collaborator_ids,
         )
-        print("About to create project")
+        print("DEBUG DEBUG DEBUG About to create project")
         # Error happened here right below
-        response = crud.create_project(db=db, project=project_data)
-        print("Created project")
+        response = crud.create_project_2(db=db, project=project_data)
+        print("DEBUG DEBUG DEBUG Created project")
 
         if response is None:
             raise HTTPException(status_code=400, detail="Failed to create project")
