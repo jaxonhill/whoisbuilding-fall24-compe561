@@ -328,6 +328,7 @@ def get_projects_by_page(db: Session, tags: List[str] | None, sort_by: dtos.Filt
             likes_count, 
             models.Project.id == likes_count.c.project_id
         ).order_by(desc(func.coalesce(likes_count.c.likes_count, 0)))
+        base_query = base_query.order_by(desc(models.Project.created_at))
     elif sort_by == dtos.FilterPageBy.NEW:
         base_query = base_query.order_by(desc(models.Project.created_at))
     elif sort_by == dtos.FilterPageBy.OLD:
