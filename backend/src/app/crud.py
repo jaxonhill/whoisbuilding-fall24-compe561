@@ -103,7 +103,10 @@ def search_users_by_username(db: Session, search_text: str, limit: int | None):
 
     case_insensitive_pattern = f"%{search_text}%" ## use ilike to do a case insensitive substring search
 
-    users = db.query(models.User).filter(models.User.username.ilike(case_insensitive_pattern)).limit(limit).all() ## todo add ranking for substring matches
+    users = db.query(models.User).filter(and_(
+        models.User.username.ilike(case_insensitive_pattern),
+        models.User.is_onboarding_complete == True
+    )).limit(limit).all() ## todo add ranking for substring matches
 
     ## map to user display, if no profile_image_url, then use None
     user_display = [UserDisplay(username=user.username, profile_image_url=user.profile_image_url or None) for user in users]
