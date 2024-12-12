@@ -102,6 +102,17 @@ class UserDisplay(BaseModel):
 class Project(ProjectBase):
     id: int
     created_at: datetime
+    liked_by: List[Like]
+    collaborators: List[Collaborator]
+    image_url: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+
+class ProjectResponse(ProjectBase):
+    id: int
+    created_at: datetime
     liked_by: List[UserDisplay]
     collaborators: List[UserDisplay]
     image_url: Optional[str] = None
@@ -110,7 +121,7 @@ class Project(ProjectBase):
         from_attributes = True
 
 class ProjectPageResponse(BaseModel):
-    projects: List[Project]
+    projects: List[ProjectResponse]
     limit: int
     page: int
 
