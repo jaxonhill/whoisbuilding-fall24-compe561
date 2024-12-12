@@ -235,7 +235,8 @@ def get_projects_with_filter(sort_by: FilterPageBy, limit: int, page: int, usern
         username=username, 
         sort_by=sort_by, 
         limit=limit, 
-        page=page
+        page=page,
+        project_name=project_name
     )
     
     return schemas.ProjectPageResponse(
