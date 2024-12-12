@@ -45,14 +45,14 @@ interface GetProjectsParams {
 }
 
 export async function getProjects({limit, page, sort_by, tags, username, search}: GetProjectsParams): Promise<PaginatedProjects> {
-    // TODO: Add short delay to simulate loading
+    // Add short delay to simulate loading if needed
     // await new Promise(resolve => setTimeout(resolve, 2000));
 
     const url = new URL(`${API_BASE_URL}/projects?limit=${limit}&page=${page}&sort_by=${sort_by}`);
     if (tags && tags.length > 0) {
         url.searchParams.set("tags", tags.join(","));
     }
-    if (username) {
+    if (username && username.length > 0) {
         url.searchParams.set("username", username);
     }
     if (search && search.length > 0) {
