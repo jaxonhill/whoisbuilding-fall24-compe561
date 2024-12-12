@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User } from "@/types/db-types";
-import { Settings, UserRound, LogOut } from "lucide-react";
+import { UserRound, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ProfileDropdown({
@@ -44,13 +44,6 @@ export default function ProfileDropdown({
           >
             <UserRound className="size-5" />
             Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="py-2 text-base text-slate-950"
-            onClick={() => router.push("/settings")}
-          >
-            <Settings className="size-5" />
-            Settings
           </DropdownMenuItem>
           <DropdownMenuItem
             className="py-2 text-base text-slate-950"
