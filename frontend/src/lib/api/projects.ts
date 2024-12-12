@@ -61,3 +61,35 @@ export async function getProjects({limit, page, sort_by, tags, username, search}
     const response = await fetch(url.toString());
     return response.json() as Promise<PaginatedProjects>;
 }
+
+export async function getProject(projectId: string) {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}`);
+  if (!response.ok) throw new Error('Failed to fetch project');
+  return response.json();
+}
+
+export async function updateProject(projectId: string, data: ProjectFormValues, token: string) {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined) {
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else if (value instanceof File) {
+        formData.append(key, value);
+      } else {
+        formData.append(key, String(value));
+      }
+    }
+  });
+
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) throw new Error('Failed to update project');
+  return response.json();
+}
